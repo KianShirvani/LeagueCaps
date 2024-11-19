@@ -9,7 +9,7 @@
 <div class="container mt-5">
     <div class="card">
         <div class="card-header bg-primary text-white text-center">
-            <h1>Ray's Grocery Checkout Line</h1>
+            <h1>SQL Cap Shop Checkout Line</h1>
         </div>
         <div class="card-body">
             <p class="text-center">Enter your customer ID and password to complete the transaction:</p>

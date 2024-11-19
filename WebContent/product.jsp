@@ -32,7 +32,6 @@
                 double price = rs.getDouble("productPrice");
                 String imageUrl = rs.getString("productImageURL");
 
-                // Retrieve any image stored directly in database
                 out.println("<div class='container mt-5'>");
                 out.println("<div class='card'>");
 
@@ -52,7 +51,7 @@
                 out.println("<p><strong>ID:</strong> " + productId + "</p>");
                 out.println("<p><strong>Price:</strong> $" + price + "</p>");
 
-                // TODO: Add links to Add to Cart and Continue Shopping
+                // Links to Add to Cart and Continue Shopping
                 out.println("<a href='addcart.jsp?id=" + productId + "&name=" + name + "&price=" + price + "' class='btn btn-success me-2'>Add to Cart</a>");
                 out.println("<a href='listprod.jsp' class='btn btn-secondary'>Continue Shopping</a>");
 

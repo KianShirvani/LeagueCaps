@@ -1,0 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap');
+
+
+/* Hero Section */
+.hero {
+    padding: 100px 20px;
+    background-color: #f8f9fa; /* Light background for the hero section */
+}
+
+/* Slideshow Background for Main Content */
+.slideshow {
+    position: relative;
+    height: auto;
+    overflow: hidden;
+}
+
+.slideshow::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    animation: slideshow 15s infinite; /* Animation to cycle through images */
+    z-index: -1;
+    opacity: 0.8; /* Adjust transparency of the images */
+}
+
+.slideshow::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+@keyframes slideshow {
+    0% {
+        background-image: url('img/tom-brady.jpg');
+    }
+    33% {
+        background-image: url('img/vince-carter.jpg');
+    }
+    66% {
+        background-image: url('img/kobe.jpg');
+    }
+    100% {
+        background-image: url('img/jose-b.jpg');
+    }
+}
+
+.navbar {
+    opacity: 0.8;
+    position: relative;
+}
+
+.footer {
+    opacity: 0.8;
+}
+
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    width: 3rem; /* Increase width */
+    height: 3rem; /* Increase height */
+    background-size: 100%; /* Ensure the icon fills the new size */
+}
+
+
+/* Animation Keyframes */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Apply Animation */
+.animated-hero h1 {
+    animation: fadeIn 2s ease-out;
+}
+
+.animated-hero p {
+    animation: fadeIn 2.5s ease-out;
+}

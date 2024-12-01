@@ -73,7 +73,7 @@
 
             <!-- Cart Button -->
             <li class="nav-item">
-                <a href="cart.jsp">
+                <a href="showcart.jsp">
                     <img src="img/cart-icon.jpg" alt="Cart" style="height: 40px; width: 40px;" class="mx-2"> <!-- Replace with your cart image -->
                 </a>
             </li>

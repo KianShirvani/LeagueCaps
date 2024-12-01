@@ -19,18 +19,17 @@
 <!-- Navbar Section -->
 <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: midnightblue;">
     <!-- Logo and Brand Name -->
-	<a class="navbar-brand ml-4" href="index.jsp" style="font-family: 'Playfair Display', serif; text-transform: uppercase; font-size: 2em; color: whitesmoke; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);">
+    <a class="navbar-brand ml-4" href="index.jsp" style="font-family: 'Playfair Display', serif; text-transform: uppercase; font-size: 2em; color: whitesmoke; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);">
         <img src="img/logo.png" alt="SQL Cap Shop" height="100" class="mr-2"> <!-- Replace with your logo -->
         LeagueCaps
     </a>
-
 
     <!-- Shop Dropdown Button -->
     <div class="dropdown mx-3 ml-2">
         <button class="btn btn-warning btn-lg dropdown-toggle" type="button" id="shopDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Shop
-        </button> 
-        <div class="dropdown-menu " aria-labelledby="shopDropdown">
+        </button>
+        <div class="dropdown-menu" aria-labelledby="shopDropdown">
             <a class="dropdown-item" href="listprod.jsp?category=MLB Caps">MLB</a>
             <a class="dropdown-item" href="listprod.jsp?category=NFL Caps">NFL</a>
             <a class="dropdown-item" href="listprod.jsp?category=NBA Caps">NBA</a>
@@ -48,23 +47,33 @@
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ml-auto align-items-center w-100">
             <!-- Search Bar -->
-			<li class="nav-item flex-grow-1">
-    			<form class="form-inline my-2 my-lg-1 w-100">
-					<input class="form-control mr-3 w-75" type="search" placeholder="Search for Your Favourite Team!" aria-label="Search" style="flex-grow: 1; height: 45px;">
-        			<button class="btn btn-outline-light my-2 my-sm-0 mr-4" type="submit">Search</button>
-    </form>
-			</li>
-
-
-            <!-- Sign In Button -->
-            <li class="nav-item">
-                <a href="login.jsp" class="btn btn-primary btn-lg mx-2">Sign In</a>
+            <li class="nav-item flex-grow-1">
+                <form class="form-inline my-2 my-lg-1 w-100">
+                    <input class="form-control mr-3 w-75" type="search" placeholder="Search for Your Favourite Team!" aria-label="Search" style="flex-grow: 1; height: 45px;">
+                    <button class="btn btn-outline-light my-2 my-sm-0 mr-4" type="submit">Search</button>
+                </form>
             </li>
 
-            <!-- Create Account Button -->
+            <!-- Dynamic User Greeting or Sign In -->
             <li class="nav-item">
-                <a href="createAccount.jsp" class="btn btn-success btn-lg mx-2">Create Account</a>
+                <%
+                    String authenticatedUser = (String) session.getAttribute("authenticatedUser");
+                    if (authenticatedUser != null) {
+                %>
+                    <a href="logout.jsp" class="btn btn-primary btn-lg mx-2">Welcome: <%= authenticatedUser %></a>
+                <% } else { %>
+                    <a href="login.jsp" class="btn btn-primary btn-lg mx-2">Sign In</a>
+                <% } %>
             </li>
+
+			<!-- Create Account Button -->
+				<%
+    				if (authenticatedUser == null) { // Only display if user is not logged in
+				%>
+    				<li class="nav-item">
+        				<a href="createAccount.jsp" class="btn btn-success btn-lg mx-2">Create Account</a>
+    				</li>
+				<% } %>
 
             <!-- Cart Button -->
             <li class="nav-item">
@@ -75,6 +84,7 @@
         </ul>
     </div>
 </nav>
+
 
 	
 

@@ -1,3 +1,8 @@
+<%@ page import="java.sql.*" %>
+<%@ page import="java.text.NumberFormat" %>
+<%@ page import="java.net.URLEncoder" %>
+<%@ page import="java.util.*" %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -150,6 +155,83 @@
         <span class="sr-only">Next</span>
     </a>
 </div>  <!-- End Div of Slideshow -->
+
+
+<!-- Dynamic Best Sellers -->
+<div class="container my-5">
+    <h2 class="text-center mb-4">Best Sellers</h2>
+    <div class="row">
+        <%
+            try {
+                Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+                String url = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";
+                String uid = "sa";
+                String pw = "304#sa#pw";
+                NumberFormat currency = NumberFormat.getCurrencyInstance();
+
+                try (Connection con = DriverManager.getConnection(url, uid, pw)) {
+                    String sql = "SELECT TOP 3 p.productId, p.productName, p.productDesc, p.productPrice, p.productImageURL, SUM(op.quantity) AS totalSales " +
+                                 "FROM product p " +
+                                 "JOIN orderproduct op ON p.productId = op.productId " +
+                                 "GROUP BY p.productId, p.productName, p.productDesc, p.productPrice, p.productImageURL " +
+                                 "ORDER BY totalSales DESC";
+
+                    try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+                        ResultSet rst = pstmt.executeQuery();
+
+                        while (rst.next()) {
+                            int productId = rst.getInt("productId");
+                            String productName = rst.getString("productName");
+                            String productDesc = rst.getString("productDesc");
+                            String productPrice = currency.format(rst.getDouble("productPrice"));
+                            String imagePath = "img/" + productId + ".jpg"; // Path to product image
+                            String addToCartLink = "addcart.jsp?id=" + productId + "&name=" + URLEncoder.encode(productName, "UTF-8")
+                                                 + "&price=" + rst.getDouble("productPrice");
+
+                            // Generate a styled card for each product
+                            out.println("<div class='col-md-4 col-sm-6 mb-4'>");
+                            out.println("    <div class='card shadow-sm h-100 border-0'>");
+                            out.println("        <div class='card-img-container'>");
+                            out.println("            <img src='" + imagePath + "' class='card-img-top img-fluid rounded-top' alt='" + productName + "'>");
+                            out.println("        </div>");
+                            out.println("        <div class='card-body text-center'>");
+                            out.println("            <h5 class='card-title font-weight-bold'>" + productName + "</h5>");
+                            out.println("            <p class='card-text text-muted small'>" + productDesc + "</p>");
+                            out.println("            <p class='card-text text-primary font-weight-bold'>" + productPrice + "</p>");
+                            out.println("        </div>");
+                            out.println("        <div class='card-footer text-center bg-white border-0'>");
+                            out.println("            <a href='product.jsp?id=" + productId + "' class='btn btn-outline-info btn-sm mr-2'>View Details</a>");
+                            out.println("            <a href='" + addToCartLink + "' class='btn btn-success btn-sm'>Add to Cart</a>");
+                            out.println("        </div>");
+                            out.println("    </div>");
+                            out.println("</div>");
+                        }
+
+                        rst.close();
+                    }
+                }
+            } catch (Exception e) {
+                out.println("<div class='col-12 text-center text-danger'>Error loading Best Sellers: " + e.getMessage() + "</div>");
+            }
+        %>
+    </div>
+</div>
+
+<style>
+    .card-img-container {
+        overflow: hidden;
+        border-top-left-radius: 0.25rem;
+        border-top-right-radius: 0.25rem;
+    }
+
+    .card-img-top {
+        width: 100%;
+        height: auto;
+    }
+</style>
+
+
+  <!-- End Of Dynamic Best Sellers -->
 
 
 <!-- Categories Section -->

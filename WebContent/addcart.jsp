@@ -1,3 +1,7 @@
+<%@ page import="java.sql.Connection" %>
+<%@ page import="java.sql.DriverManager" %>
+<%@ page import="java.sql.PreparedStatement" %>
+<%@ page import="java.sql.ResultSet" %>
 <%@ page import="java.util.HashMap" %>
 <%@ page import="java.util.ArrayList" %>
 <!DOCTYPE html>
@@ -79,74 +83,137 @@
     </div>
 </nav>
 
-<%
-    // Get the current list of products
-    @SuppressWarnings({"unchecked"})
-    HashMap<String, ArrayList<Object>> productList = (HashMap<String, ArrayList<Object>>) session.getAttribute("productList");
-    boolean remove = false;
+<div class="container my-4">
+    <% 
+        // Display error message if it exists
+        String errorMessage = (String) session.getAttribute("errorMessage");
+        if (errorMessage != null) {
+    %>
+        <div class="alert alert-danger text-center" role="alert">
+            <%= errorMessage %>
+        </div>
+    <%
+        session.removeAttribute("errorMessage"); // Clear the error message after displaying it
+        }
+    %>
 
-    // Initialize the product list if it doesn't exist
-    if (productList == null) {
-        productList = new HashMap<String, ArrayList<Object>>();
+    <%
+        // Database credentials
+        String dbUrl = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";
+        String dbUser = "sa";
+        String dbPassword = "304#sa#pw";
+
+        // Get the current list of products
+        @SuppressWarnings({"unchecked"})
+        HashMap<String, ArrayList<Object>> productList = (HashMap<String, ArrayList<Object>>) session.getAttribute("productList");
+        boolean remove = false;
+
+        // Initialize the product list if it doesn't exist
+        if (productList == null) {
+            productList = new HashMap<>();
+            session.setAttribute("productList", productList);
+        }
+
+        // Remove a product if "removeId" is provided
+        String removeId = request.getParameter("removeId");
+        if (removeId != null) {
+            productList.remove(removeId);
+            remove = true; // Set to true if deleted an item
+        }
+
+        // Update product quantity if "updateId" and "quantity" are provided
+        String updateId = request.getParameter("updateId");
+        String quantityParam = request.getParameter("quantity");
+        if (updateId != null && quantityParam != null) {
+            try {
+                int newQuantity = Integer.parseInt(quantityParam);
+
+                if (productList.containsKey(updateId)) {
+                    // Validate quantity against inventory
+                    int availableInventory = 0;
+
+                    try (Connection con = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+                         PreparedStatement stmt = con.prepareStatement("SELECT quantity FROM productinventory WHERE productId = ?")) {
+                        stmt.setInt(1, Integer.parseInt(updateId));
+                        ResultSet rs = stmt.executeQuery();
+                        if (rs.next()) {
+                            availableInventory = rs.getInt("quantity");
+                        }
+                    }
+
+                    if (newQuantity > 0 && newQuantity <= availableInventory) {
+                        ArrayList<Object> product = productList.get(updateId);
+                        product.set(3, newQuantity); // Update the quantity in the product list
+                    } else if (newQuantity > availableInventory) {
+                        session.setAttribute("errorMessage", "Only " + availableInventory + " units available for this product. Please adjust your quantity.");
+                        response.sendRedirect("addcart.jsp");
+                        return;
+                    } else {
+                        // Remove the product if the new quantity is 0
+                        productList.remove(updateId);
+                    }
+                }
+            } catch (NumberFormatException e) {
+                session.setAttribute("errorMessage", "Invalid quantity provided. Please try again.");
+                response.sendRedirect("addcart.jsp");
+                return;
+            }
+            remove = true; // Avoid adding a product if updating quantity
+        }
+
+        // Add or update a product if "removeId" and "updateId" are not present
+        if (!remove) {
+            String id = request.getParameter("id");
+            String name = request.getParameter("name");
+            String price = request.getParameter("price");
+
+            if (id != null && name != null && price != null) {
+                ArrayList<Object> product = new ArrayList<>();
+                int requestedQuantity = 1;
+                int availableInventory = 0;
+
+                // Check available inventory
+                try (Connection con = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+                     PreparedStatement stmt = con.prepareStatement("SELECT quantity FROM productinventory WHERE productId = ?")) {
+                    stmt.setInt(1, Integer.parseInt(id));
+                    ResultSet rs = stmt.executeQuery();
+                    if (rs.next()) {
+                        availableInventory = rs.getInt("quantity");
+                    }
+                }
+
+                if (requestedQuantity <= availableInventory) {
+                    // Check if the product already exists in the cart
+                    if (productList.containsKey(id)) {
+                        product = productList.get(id);
+                        int curAmount = (Integer) product.get(3);
+                        if (curAmount + requestedQuantity <= availableInventory) {
+                            product.set(3, curAmount + requestedQuantity); // Increment quantity
+                        } else {
+                            session.setAttribute("errorMessage", "Only " + availableInventory + " units available for this product. Please adjust your quantity.");
+                            response.sendRedirect("addcart.jsp");
+                            return;
+                        }
+                    } else {
+                        // Add new product to the list
+                        product.add(id);     // Product ID
+                        product.add(name);   // Product Name
+                        product.add(price);  // Product Price
+                        product.add(requestedQuantity); // Product Quantity
+                        productList.put(id, product);
+                    }
+                } else {
+                    session.setAttribute("errorMessage", "Only " + availableInventory + " units available for this product. Please adjust your quantity.");
+                    response.sendRedirect("addcart.jsp");
+                    return;
+                }
+            }
+        }
+
+        // Update the session attribute with the updated product list
         session.setAttribute("productList", productList);
-    }
-
-    // Remove a product if "removeId" is provided from "Remove" button on showcart.jsp
-    String removeId = request.getParameter("removeId");
-    if (removeId != null) {
-        productList.remove(removeId);
-        remove = true; //set to true if deleted an item
-    }
-
-    // Update product quantity if "updateId" and "quantity" are provided
-    String updateId = request.getParameter("updateId");
-    String quantityParam = request.getParameter("quantity");
-    if (updateId != null && quantityParam != null) {
-        try {
-            int newQuantity = Integer.parseInt(quantityParam);
-            if (newQuantity > 0 && productList.containsKey(updateId)) {
-                ArrayList<Object> product = productList.get(updateId);
-                product.set(3, newQuantity); // Update the quantity in the product list
-            } else if (newQuantity == 0) {
-                // Remove the product if the new quantity is 0
-                productList.remove(updateId);
-            }
-        } catch (NumberFormatException e) {
-            // Handle invalid quantity input
-            out.println("<p>Invalid quantity provided. Please try again.</p>");
-        }
-        remove = true; // Avoid adding a product if updating quantity
-    }
-
-    // Add or update a product if "removeId" and "updateId" are not present
-    if (!remove) {
-        String id = request.getParameter("id");
-        String name = request.getParameter("name");
-        String price = request.getParameter("price");
-
-        if (id != null && name != null && price != null) {
-            ArrayList<Object> product = new ArrayList<Object>();
-            Integer quantity = 1;
-
-            // Check if the product already exists in the cart
-            if (productList.containsKey(id)) {
-                product = (ArrayList<Object>) productList.get(id);
-                int curAmount = ((Integer) product.get(3)).intValue();
-                product.set(3, curAmount + 1); // Increment quantity
-            } else {
-                // Add new product to the list
-                product.add(id);     // Product ID
-                product.add(name);   // Product Name
-                product.add(price);  // Product Price
-                product.add(quantity); // Product Quantity
-                productList.put(id, product);
-            }
-        }
-    }
-
-    // Update the session attribute with the updated product list
-    session.setAttribute("productList", productList);
-%>
-<jsp:forward page="showcart.jsp" />
+    %>
+    <jsp:forward page="showcart.jsp" />
+</div>
 </body>
 </html>

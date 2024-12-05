@@ -250,7 +250,7 @@
                 
                     <!-- Recommendations Section -->
                     <div class="mt-5">
-                        <h3 class="mb-4">Recommended for You</h3>
+                        <h3 class="mb-4 text-center">Recommended for You</h3>
                         <div class="row">
                             <%
                                 // Query to fetch 5 random hats from the database

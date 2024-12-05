@@ -119,13 +119,19 @@
                 if (productList.containsKey(updateId)) {
                     // Validate quantity against inventory
                     int availableInventory = 0;
+                    String productName = "";
 
                     try (Connection con = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
-                         PreparedStatement stmt = con.prepareStatement("SELECT quantity FROM productinventory WHERE productId = ?")) {
+                         PreparedStatement stmt = con.prepareStatement(
+                             "SELECT pi.quantity, p.productName " +
+                             "FROM productinventory pi " +
+                             "JOIN product p ON pi.productId = p.productId " +
+                             "WHERE pi.productId = ?")) {
                         stmt.setInt(1, Integer.parseInt(updateId));
                         ResultSet rs = stmt.executeQuery();
                         if (rs.next()) {
                             availableInventory = rs.getInt("quantity");
+                            productName = rs.getString("productName");
                         }
                     }
 
@@ -133,7 +139,7 @@
                         ArrayList<Object> product = productList.get(updateId);
                         product.set(3, newQuantity); // Update the quantity in the product list
                     } else if (newQuantity > availableInventory) {
-                        session.setAttribute("errorMessage", "Only " + availableInventory + " units available for this product. Please adjust your quantity.");
+                        session.setAttribute("errorMessage", "Only " + availableInventory + " caps available for " + productName + ". Please adjust your quantity.");
                         response.sendRedirect("addcart.jsp");
                         return;
                     } else {

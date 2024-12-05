@@ -154,6 +154,9 @@
 
 						out.println("<div class='alert alert-success'>Order placed successfully!</div>");
 
+						// Clear the shopping cart
+						session.removeAttribute("productList");
+
 						conn.close();
 					} catch (Exception e) {
 						e.printStackTrace();

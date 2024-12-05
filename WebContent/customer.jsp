@@ -130,49 +130,6 @@
         }
 
         String errorMessage = "";
-        if ("POST".equalsIgnoreCase(request.getMethod())) {
-            String firstName = request.getParameter("firstName");
-            String lastName = request.getParameter("lastName");
-            String email = request.getParameter("email");
-            String phone = request.getParameter("phone");
-            String address = request.getParameter("address");
-            String city = request.getParameter("city");
-            String state = request.getParameter("state");
-            String postalCode = request.getParameter("postalCode");
-            String country = request.getParameter("country");
-
-            Connection conn = null;
-            PreparedStatement updateCustomerStmt = null;
-
-            try {
-                String url = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";
-                String uid = "sa";
-                String pw = "304#sa#pw";
-                conn = DriverManager.getConnection(url, uid, pw);
-
-                String updateCustomerSQL = "UPDATE Customer SET firstName = ?, lastName = ?, email = ?, phonenum = ?, address = ?, city = ?, state = ?, postalCode = ?, country = ? WHERE userid = ?";
-                updateCustomerStmt = conn.prepareStatement(updateCustomerSQL);
-                updateCustomerStmt.setString(1, firstName);
-                updateCustomerStmt.setString(2, lastName);
-                updateCustomerStmt.setString(3, email);
-                updateCustomerStmt.setString(4, phone);
-                updateCustomerStmt.setString(5, address);
-                updateCustomerStmt.setString(6, city);
-                updateCustomerStmt.setString(7, state);
-                updateCustomerStmt.setString(8, postalCode);
-                updateCustomerStmt.setString(9, country);
-                updateCustomerStmt.setString(10, userName);
-                updateCustomerStmt.executeUpdate();
-
-                errorMessage = "Information updated successfully!";
-            } catch (Exception e) {
-                e.printStackTrace();
-                errorMessage = "An error occurred while updating your information. Please try again.";
-            } finally {
-                if (updateCustomerStmt != null) try { updateCustomerStmt.close(); } catch (SQLException e) { e.printStackTrace(); }
-                if (conn != null) try { conn.close(); } catch (SQLException e) { e.printStackTrace(); }
-            }
-        }
     %>
     <div class="card">
         <div class="card-header text-center">
@@ -212,6 +169,7 @@
                         <tr><th scope="row">State</th><td><input type="text" name="state" class="form-control" value="<%= rs.getString("state") %>"></td></tr>
                         <tr><th scope="row">Postal Code</th><td><input type="text" name="postalCode" class="form-control" value="<%= rs.getString("postalCode") %>"></td></tr>
                         <tr><th scope="row">Country</th><td><input type="text" name="country" class="form-control" value="<%= rs.getString("country") %>"></td></tr>
+                        <tr><th scope="row">Password</th><td><input type="password" name="newPassword" class="form-control" placeholder="New Password"></td></tr>
                         <tr><th scope="row">User ID</th><td><%= rs.getString("userid") %></td></tr>
                     </tbody>
                 </table>
@@ -222,8 +180,47 @@
             <div class="text-center text-success"><%= errorMessage %></div>
             <%
                     }
+
+                    // Update customer details
+                    if ("POST".equalsIgnoreCase(request.getMethod())) {
+                        String firstName = request.getParameter("firstName");
+                        String lastName = request.getParameter("lastName");
+                        String email = request.getParameter("email");
+                        String phone = request.getParameter("phone");
+                        String address = request.getParameter("address");
+                        String city = request.getParameter("city");
+                        String state = request.getParameter("state");
+                        String postalCode = request.getParameter("postalCode");
+                        String country = request.getParameter("country");
+                        String newPassword = request.getParameter("newPassword");
+
+                        String updateCustomerSQL = "UPDATE Customer SET firstName = ?, lastName = ?, email = ?, phonenum = ?, address = ?, city = ?, state = ?, postalCode = ?, country = ? WHERE userid = ?";
+                        PreparedStatement updateCustomerStmt = conn.prepareStatement(updateCustomerSQL);
+                        updateCustomerStmt.setString(1, firstName);
+                        updateCustomerStmt.setString(2, lastName);
+                        updateCustomerStmt.setString(3, email);
+                        updateCustomerStmt.setString(4, phone);
+                        updateCustomerStmt.setString(5, address);
+                        updateCustomerStmt.setString(6, city);
+                        updateCustomerStmt.setString(7, state);
+                        updateCustomerStmt.setString(8, postalCode);
+                        updateCustomerStmt.setString(9, country);
+                        updateCustomerStmt.setString(10, authenticatedUser);
+                        updateCustomerStmt.executeUpdate();
+
+                        if (newPassword != null && !newPassword.isEmpty()) {
+                            String updatePasswordSQL = "UPDATE customer SET password = ? WHERE userid = ?";
+                            PreparedStatement updatePasswordStmt = conn.prepareStatement(updatePasswordSQL);
+                            updatePasswordStmt.setString(1, newPassword);
+                            updatePasswordStmt.setString(2, authenticatedUser);
+                            updatePasswordStmt.executeUpdate();
+                            out.println("<div class='alert alert-success'>Password changed successfully</div>");
+                        }
+                    }
+
                 } catch (Exception e) {
                     e.printStackTrace();
+                    out.println("<div class='alert alert-danger'>Error processing request</div>");
                 } finally {
                     if (rs != null) try { rs.close(); } catch (SQLException e) { e.printStackTrace(); }
                     if (fetchCustomerStmt != null) try { fetchCustomerStmt.close(); } catch (SQLException e) { e.printStackTrace(); }

@@ -143,6 +143,22 @@ CREATE TABLE review (
         ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+INSERT INTO paymentmethod (paymentType, paymentNumber, paymentExpiryDate, customerId)
+VALUES ('Credit Card', '1111111111', '2025-12-31', 1);
+
+INSERT INTO paymentmethod (paymentType, paymentNumber, paymentExpiryDate, customerId)
+VALUES ('Debit Card', '2222222222', '2026-06-30', 2);
+
+INSERT INTO paymentmethod (paymentType, paymentNumber, paymentExpiryDate, customerId)
+VALUES ('Credit Card', '3333333333', '2025-09-15', 3);
+
+INSERT INTO paymentmethod (paymentType, paymentNumber, paymentExpiryDate, customerId)
+VALUES ('Bank Transfer', '4444444444', '2027-01-01', 4);
+
+INSERT INTO paymentmethod (paymentType, paymentNumber, paymentExpiryDate, customerId)
+VALUES ('Credit Card', '5555555555', '2024-11-30', 5);
+
+
 INSERT INTO category (categoryName) VALUES ('NFL Caps');
 INSERT INTO category (categoryName) VALUES ('MLB Caps');
 INSERT INTO category (categoryName) VALUES ('NBA Caps');

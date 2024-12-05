@@ -6,7 +6,7 @@
 
 <html>
 <head>
-<title>Caps Store - Product Information</title>
+<title>LeagueCaps - Product Information</title>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <link rel="stylesheet" href="styles.css"> 
 <style>

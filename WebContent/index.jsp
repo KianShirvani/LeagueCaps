@@ -73,13 +73,16 @@
     <!-- Navbar Links -->
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ml-auto align-items-center w-100">
-            <!-- Search Bar -->
-            <li class="nav-item flex-grow-1">
-                <form class="form-inline my-2 my-lg-1 w-100">
-                    <input class="form-control mr-3 w-75" type="search" placeholder="Search for Your Favourite Team!" aria-label="Search" style="flex-grow: 1; height: 45px;">
-                    <button class="btn btn-outline-light my-2 my-sm-0 mr-4" type="submit">Search</button>
-                </form>
-            </li>
+           <!-- Search Bar -->
+<!-- Search Bar -->
+<li class="nav-item flex-grow-1">
+    <form class="form-inline my-2 my-lg-1 w-100" action="listprod.jsp" method="get">
+        <!-- Update name to 'productName' to match listprod.jsp -->
+        <input class="form-control mr-3 w-75" type="search" name="productName" placeholder="Search for Your Favourite Team!" aria-label="Search" style="flex-grow: 1; height: 45px;">
+        <button class="btn btn-outline-light my-2 my-sm-0 mr-4" type="submit">Search</button>
+    </form>
+</li>
+
 
             <!-- Dynamic User Greeting or Sign In -->
             <li class="nav-item">

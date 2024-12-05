@@ -92,21 +92,20 @@
                     <label for="customerPassword" class="form-label"></label>
                     <input type="password" id="customerPassword" name="customerPassword" class="form-control" placeholder="Password" required>
                 </div>
-                <div>
-                    <input type="submit" value="Submit" class="btn btn-success me-2">
+                <div class="d-flex justify-content-between" style="width: 300px;">
+                    <a href="paymentInfo.jsp" class="btn btn-primary">Previous</a>
                     <a href="index.jsp" class="btn btn-secondary">Home</a>
+                    <input type="submit" value="Submit" class="btn btn-success">
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-
-
-	<!-- Footer Section -->
-	<footer class="footer text-light mt-5 py-4" style="background-color: midnightblue;">
-		<div class="container">
-			<div class="row">
+<!-- Footer Section -->
+<footer class="footer text-light mt-5 py-4" style="background-color: midnightblue;">
+    <div class="container">
+        <div class="row">
 				<!-- About Section -->
 				<div class="col-md-3">
 					<h5>About</h5>

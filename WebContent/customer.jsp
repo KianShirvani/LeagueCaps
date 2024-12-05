@@ -92,7 +92,7 @@
                     String authenticatedUser = (String) session.getAttribute("authenticatedUser");
                     if (authenticatedUser != null) {
                 %>
-                    <a href="logout.jsp" class="btn btn-primary btn-lg mx-2">Welcome: <%= authenticatedUser %></a>
+                    <a href="logout.jsp" class="btn btn-primary btn-lg mx-2">Logout</a>
                 <% } else { %>
                     <a href="login.jsp" class="btn btn-primary btn-lg mx-2">Sign In</a>
                 <% } %>
@@ -128,6 +128,51 @@
     <%
             return;
         }
+
+        String errorMessage = "";
+        if ("POST".equalsIgnoreCase(request.getMethod())) {
+            String firstName = request.getParameter("firstName");
+            String lastName = request.getParameter("lastName");
+            String email = request.getParameter("email");
+            String phone = request.getParameter("phone");
+            String address = request.getParameter("address");
+            String city = request.getParameter("city");
+            String state = request.getParameter("state");
+            String postalCode = request.getParameter("postalCode");
+            String country = request.getParameter("country");
+
+            Connection conn = null;
+            PreparedStatement updateCustomerStmt = null;
+
+            try {
+                String url = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";
+                String uid = "sa";
+                String pw = "304#sa#pw";
+                conn = DriverManager.getConnection(url, uid, pw);
+
+                String updateCustomerSQL = "UPDATE Customer SET firstName = ?, lastName = ?, email = ?, phonenum = ?, address = ?, city = ?, state = ?, postalCode = ?, country = ? WHERE userid = ?";
+                updateCustomerStmt = conn.prepareStatement(updateCustomerSQL);
+                updateCustomerStmt.setString(1, firstName);
+                updateCustomerStmt.setString(2, lastName);
+                updateCustomerStmt.setString(3, email);
+                updateCustomerStmt.setString(4, phone);
+                updateCustomerStmt.setString(5, address);
+                updateCustomerStmt.setString(6, city);
+                updateCustomerStmt.setString(7, state);
+                updateCustomerStmt.setString(8, postalCode);
+                updateCustomerStmt.setString(9, country);
+                updateCustomerStmt.setString(10, userName);
+                updateCustomerStmt.executeUpdate();
+
+                errorMessage = "Information updated successfully!";
+            } catch (Exception e) {
+                e.printStackTrace();
+                errorMessage = "An error occurred while updating your information. Please try again.";
+            } finally {
+                if (updateCustomerStmt != null) try { updateCustomerStmt.close(); } catch (SQLException e) { e.printStackTrace(); }
+                if (conn != null) try { conn.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
+        }
     %>
     <div class="card">
         <div class="card-header text-center">
@@ -154,21 +199,27 @@
 
                     if (rs.next()) {
             %>
-            <table class="table table-striped table-bordered">
-                <tbody>
-                    <tr><th scope="row">ID</th><td><%= rs.getInt("customerId") %></td></tr>
-                    <tr><th scope="row">First Name</th><td><%= rs.getString("firstName") %></td></tr>
-                    <tr><th scope="row">Last Name</th><td><%= rs.getString("lastName") %></td></tr>
-                    <tr><th scope="row">Email</th><td><%= rs.getString("email") %></td></tr>
-                    <tr><th scope="row">Phone Number</th><td><%= rs.getString("phonenum") %></td></tr>
-                    <tr><th scope="row">Address</th><td><%= rs.getString("address") %></td></tr>
-                    <tr><th scope="row">City</th><td><%= rs.getString("city") %></td></tr>
-                    <tr><th scope="row">State</th><td><%= rs.getString("state") %></td></tr>
-                    <tr><th scope="row">Postal Code</th><td><%= rs.getString("postalCode") %></td></tr>
-                    <tr><th scope="row">Country</th><td><%= rs.getString("country") %></td></tr>
-                    <tr><th scope="row">User ID</th><td><%= rs.getString("userid") %></td></tr>
-                </tbody>
-            </table>
+            <form method="post" action="customer.jsp">
+                <table class="table table-striped table-bordered">
+                    <tbody>
+                        <tr><th scope="row">ID</th><td><%= rs.getInt("customerId") %></td></tr>
+                        <tr><th scope="row">First Name</th><td><input type="text" name="firstName" class="form-control" value="<%= rs.getString("firstName") %>"></td></tr>
+                        <tr><th scope="row">Last Name</th><td><input type="text" name="lastName" class="form-control" value="<%= rs.getString("lastName") %>"></td></tr>
+                        <tr><th scope="row">Email</th><td><input type="email" name="email" class="form-control" value="<%= rs.getString("email") %>"></td></tr>
+                        <tr><th scope="row">Phone Number</th><td><input type="text" name="phone" class="form-control" value="<%= rs.getString("phonenum") %>"></td></tr>
+                        <tr><th scope="row">Address</th><td><input type="text" name="address" class="form-control" value="<%= rs.getString("address") %>"></td></tr>
+                        <tr><th scope="row">City</th><td><input type="text" name="city" class="form-control" value="<%= rs.getString("city") %>"></td></tr>
+                        <tr><th scope="row">State</th><td><input type="text" name="state" class="form-control" value="<%= rs.getString("state") %>"></td></tr>
+                        <tr><th scope="row">Postal Code</th><td><input type="text" name="postalCode" class="form-control" value="<%= rs.getString("postalCode") %>"></td></tr>
+                        <tr><th scope="row">Country</th><td><input type="text" name="country" class="form-control" value="<%= rs.getString("country") %>"></td></tr>
+                        <tr><th scope="row">User ID</th><td><%= rs.getString("userid") %></td></tr>
+                    </tbody>
+                </table>
+                <div class="form-group text-center">
+                    <button type="submit" class="btn btn-primary btn-lg">Update Information</button>
+                </div>
+            </form>
+            <div class="text-center text-success"><%= errorMessage %></div>
             <%
                     }
                 } catch (Exception e) {

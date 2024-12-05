@@ -58,15 +58,15 @@
 
 				<!-- Dynamic User Greeting or Sign In -->
 				<li class="nav-item">
-					<%
-						String authenticatedUser = (String) session.getAttribute("authenticatedUser");
-						if (authenticatedUser != null) {
-					%>
-						<a href="logout.jsp" class="btn btn-primary btn-lg mx-2">Welcome: <%= authenticatedUser %></a>
-					<% } else { %>
-						<a href="login.jsp" class="btn btn-primary btn-lg mx-2">Sign In</a>
-					<% } %>
-				</li>
+                <%
+                    String authenticatedUser = (String) session.getAttribute("authenticatedUser");
+                    if (authenticatedUser != null) {
+                %>
+                    <a href="logout.jsp" class="btn btn-primary btn-lg mx-2">Logout</a>
+                <% } else { %>
+                    <a href="login.jsp" class="btn btn-primary btn-lg mx-2">Sign In</a>
+                <% } %>
+            	</li>
 
 				<!-- Create Account Button -->
 				<%

@@ -4,7 +4,53 @@
     <title>Payment Information</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 	<link rel="stylesheet" href="styles.css">
+    <link rel="shortcut icon" type="image/x-icon" href="img/logo.png" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .error-border {
+            border: 2px solid red;
+        }
+    </style>
+    <script>
+        function validateForm() {
+            var paymentType = document.getElementById("paymentType").value;
+            var paymentNumber = document.getElementById("paymentNumber").value;
+            var paymentDate = document.getElementById("paymentDate").value;
+
+            var paymentTypeRegex = /^[a-zA-Z\s]+$/;
+            var paymentNumberRegex = /^[0-9]+$/;
+            var paymentDateRegex = /^[0-9\/\-]+$/;
+
+            var errorMessage = "";
+
+            // Clear previous error styles
+            document.getElementById("paymentType").classList.remove("error-border");
+            document.getElementById("paymentNumber").classList.remove("error-border");
+            document.getElementById("paymentDate").classList.remove("error-border");
+
+            if (!paymentTypeRegex.test(paymentType)) {
+                errorMessage += "Invalid Payment Type.<br>";
+                document.getElementById("paymentType").classList.add("error-border");
+            }
+
+            if (!paymentNumberRegex.test(paymentNumber)) {
+                errorMessage += "Invalid Payment Number.<br>";
+                document.getElementById("paymentNumber").classList.add("error-border");
+            }
+
+            if (!paymentDateRegex.test(paymentDate)) {
+                errorMessage += "Invalid Payment Date.<br>";
+                document.getElementById("paymentDate").classList.add("error-border");
+            }
+
+            if (errorMessage != "") {
+                document.getElementById("errorMessages").innerHTML = '<div class="alert alert-danger" role="alert">' + errorMessage + '</div>';
+                return false;
+            }
+
+            return true;
+        }
+    </script>
 </head>
 <body>
 
@@ -81,7 +127,8 @@
         </div>
         <div class="card-body">
             <p class="text-center">Enter your payment information:</p>
-            <form method="get" action="checkout.jsp" class="d-flex flex-column align-items-center">
+            <div id="errorMessages" class="mt-3"></div> <!-- Error Messages Section -->
+            <form method="get" action="checkout.jsp" class="d-flex flex-column align-items-center" onsubmit="return validateForm()">
                 <div class="mb-3" style="width: 300px;">
                     <label for="paymentType" class="form-label"></label>
                     <input type="text" id="paymentType" name="paymentType" class="form-control" placeholder="Payment Type" required>
@@ -92,7 +139,7 @@
                 </div>
                 <div class="mb-3" style="width: 300px;">
                     <label for="paymentExpiryDate" class="form-label"></label>
-                    <input type="text" id="paymentExpiryDate" name="paymentExpiryDate" class="form-control" placeholder="MM/YY" required>
+                    <input type="text" id="paymentDate" name="paymentDate" class="form-control" placeholder="MM/YY" required>
                 </div>
                 <div class="d-flex justify-content-between" style="width: 300px;">
                     <a href="shippingInfo.jsp" class="btn btn-primary">Previous</a>

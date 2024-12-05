@@ -6,6 +6,11 @@
 	<link rel="stylesheet" href="styles.css">
 	<link rel="shortcut icon" type="image/x-icon" href="img/logo.png" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .error-border {
+            border: 2px solid red;
+        }
+    </style>
     <script>
         function validateForm() {
             var address = document.getElementById("address").value;
@@ -14,10 +19,54 @@
             var postalCode = document.getElementById("postalCode").value;
             var country = document.getElementById("country").value;
 
+            var cityRegex = /^[a-zA-Z\s]+$/;
+            var stateRegex = /^[a-zA-Z\s]+$/;
+			var postalCodeRegex = /^[a-zA-Z0-9\s]{6,7}$/;
+            var countryRegex = /^[a-zA-Z\s]+$/;
+
+            var errorMessage = "";
+
+            // Clear previous error styles
+            document.getElementById("address").classList.remove("error-border");
+            document.getElementById("city").classList.remove("error-border");
+            document.getElementById("state").classList.remove("error-border");
+            document.getElementById("postalCode").classList.remove("error-border");
+            document.getElementById("country").classList.remove("error-border");
+
             if (address == "" || city == "" || state == "" || postalCode == "" || country == "") {
-                alert("All fields must be filled out");
+                errorMessage += "All fields must be filled out.<br>";
+                if (address == "") document.getElementById("address").classList.add("error-border");
+                if (city == "") document.getElementById("city").classList.add("error-border");
+                if (state == "") document.getElementById("state").classList.add("error-border");
+                if (postalCode == "") document.getElementById("postalCode").classList.add("error-border");
+                if (country == "") document.getElementById("country").classList.add("error-border");
+            }
+
+            if (!cityRegex.test(city)) {
+                errorMessage += "Invalid City.<br>";
+                document.getElementById("city").classList.add("error-border");
+            }
+
+            if (!stateRegex.test(state)) {
+                errorMessage += "Invalid State.<br>";
+                document.getElementById("state").classList.add("error-border");
+            }
+
+            if (!postalCodeRegex.test(postalCode)) {
+                errorMessage += "Invalid Postal Code.<br>";
+                document.getElementById("postalCode").classList.add("error-border");
+            }
+
+            if (!countryRegex.test(country)) {
+                errorMessage += "Invalid Country.<br>";
+                document.getElementById("country").classList.add("error-border");
+            }
+
+            if (errorMessage != "") {
+                document.getElementById("errorMessages").innerHTML = '<div class="alert alert-danger" role="alert">' + errorMessage + '</div>';
                 return false;
             }
+
             return true;
         }
     </script>
@@ -91,6 +140,9 @@
 			</ul>
 		</div>
 	</nav>
+
+
+
 <div class="container mt-5">
     <div class="card">
         <div class="card-header bg-primary text-white text-center">
@@ -98,6 +150,8 @@
         </div>
         <div class="card-body">
             <p class="text-center">Enter your Shipping Information</p>
+			<!-- Error Messages Section -->
+<div id="errorMessages" class="container mt-3"></div>
             <form method="get" action="paymentInfo.jsp" class="d-flex flex-column align-items-center" onsubmit="return validateForm()">
                 <div class="mb-3" style="width: 300px;">
                     <label for="address" class="form-label"></label>

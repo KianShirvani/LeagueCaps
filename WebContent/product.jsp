@@ -146,7 +146,7 @@
                 String name = rs.getString("productName");
                 String desc = rs.getString("productDesc");
                 double price = rs.getDouble("productPrice");
-                String imageUrl = rs.getString("productImageURL");
+                String imageUrl = "img/" + productId + ".jpg"; // Path to product image
                 %>
                 <div class="container mt-5">
                     <div class="row">
@@ -262,7 +262,7 @@
                                         String recProductId = recResultSet.getString("productId");
                                         String recProductName = recResultSet.getString("productName");
                                         double recProductPrice = recResultSet.getDouble("productPrice");
-                                        String recProductImageURL = recResultSet.getString("productImageURL");
+                                        String recProductImageURL = "img/" + recProductId + ".jpg"; // Path to product image
                             %>
                             <!-- Recommended Product Card -->
                             <div class="col-md-3 mb-4">

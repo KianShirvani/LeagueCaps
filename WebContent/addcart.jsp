@@ -64,14 +64,14 @@
                 <% } %>
             </li>
 
-			<!-- Create Account Button -->
-				<%
-    				if (authenticatedUser == null) { // Only display if user is not logged in
-				%>
-    				<li class="nav-item">
-        				<a href="createAccount.jsp" class="btn btn-success btn-lg mx-2">Create Account</a>
-    				</li>
-				<% } %>
+            <!-- Create Account Button -->
+            <%
+                if (authenticatedUser == null) { // Only display if user is not logged in
+            %>
+                <li class="nav-item">
+                    <a href="createAccount.jsp" class="btn btn-success btn-lg mx-2">Create Account</a>
+                </li>
+            <% } %>
 
             <!-- Cart Button -->
             <li class="nav-item">

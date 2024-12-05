@@ -27,75 +27,111 @@
 			<img src="img/logo.png" alt="SQL Cap Shop" height="100" class="mr-2"> <!-- Replace with your logo -->
 			LeagueCaps
 		</a>
+
+		<!-- Shop Dropdown Button -->
+		<div class="dropdown mx-3 ml-2">
+			<button class="btn btn-warning btn-lg dropdown-toggle" type="button" id="shopDropdown"
+				data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Shop
+			</button>
+			<div class="dropdown-menu" aria-labelledby="shopDropdown">
+				<a class="dropdown-item" href="listprod.jsp?category=MLB Caps">MLB</a>
+				<a class="dropdown-item" href="listprod.jsp?category=NFL Caps">NFL</a>
+				<a class="dropdown-item" href="listprod.jsp?category=NBA Caps">NBA</a>
+				<div class="dropdown-divider"></div>
+				<a class="dropdown-item" href="listprod.jsp">Shop All</a>
+			</div>
+		</div>
+
+		<!-- Navbar Links -->
+		<div class="collapse navbar-collapse" id="navbarNav">
+			<ul class="navbar-nav ml-auto align-items-center w-100">
+				<!-- Search Bar -->
+				<li class="nav-item flex-grow-1">
+					<form class="form-inline my-2 my-lg-1 w-100">
+						<input class="form-control mr-3 w-75" type="search"
+							placeholder="Search for Your Favourite Team!" aria-label="Search"
+							style="flex-grow: 1; height: 45px;">
+						<button class="btn btn-outline-light my-2 my-sm-0 mr-4" type="submit">Search</button>
+					</form>
+				</li>
+
+				<!-- Dynamic User Greeting or Sign In -->
+				<li class="nav-item">
+					<%
+						String authenticatedUser = (String) session.getAttribute("authenticatedUser");
+						if (authenticatedUser != null) {
+					%>
+						<a href="logout.jsp" class="btn btn-primary btn-lg mx-2">Welcome: <%= authenticatedUser %></a>
+					<% } else { %>
+						<a href="login.jsp" class="btn btn-primary btn-lg mx-2">Sign In</a>
+					<% } %>
+				</li>
+
+				<!-- Create Account Button -->
+				<%
+					if (authenticatedUser == null) { // Only display if user is not logged in
+				%>
+					<li class="nav-item">
+						<a href="createAccount.jsp" class="btn btn-success btn-lg mx-2">Create Account</a>
+					</li>
+				<% } %>
+
+				<!-- Cart Button -->
+				<li class="nav-item">
+					<a href="showcart.jsp">
+						<img src="img/cart-icon.jpg" alt="Cart" style="height: 40px; width: 40px;" class="mx-2"> <!-- Replace with your cart image -->
+					</a>
+				</li>
+			</ul>
+		</div>
 	</nav>
 
-	<div class="container mt-5">
+	<div class="container mt-5 mb-3">
+		<div class="card mb-3">
+			<div class="card-header bg-primary text-white text-center">
+				<h1>Order Confirmation</h1>
+			</div>
+			<div class="card-body">
+				<%
+					String url = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";
+					String uid = "sa";
+					String pw = "304#sa#pw";
+					Connection conn = null;
 
-		<%
-		String url = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";
-		String uid = "sa";
-		String pw = "304#sa#pw";
-		Connection conn = null;
-	
-		try {
-			// Retrieve customer ID and password
-			String customerId = request.getParameter("customerId");
-			String password = request.getParameter("customerPassword");
-	
-			// Validate input
-			if (customerId == null || !customerId.matches("\\d+")) {
-				out.println("<div class='alert alert-danger'>Invalid customer ID.</div>");
-				return;
-			}
-			if (password == null || password.isEmpty()) {
-				out.println("<div class='alert alert-danger'>Password cannot be empty.</div>");
-				return;
-			}
-	
-			conn = DriverManager.getConnection(url, uid, pw);
-	
-			// Validate customer ID and password in the database
-			PreparedStatement checkCustomerStmt = conn.prepareStatement(
-				"SELECT firstName, lastName FROM Customer WHERE customerId = ? AND password = ?");
-			checkCustomerStmt.setInt(1, Integer.parseInt(customerId));
-			checkCustomerStmt.setString(2, password);
-			ResultSet customerRs = checkCustomerStmt.executeQuery();
-	
-			String customerName = "";
-			if (customerRs.next()) {
-				customerName = customerRs.getString("firstName") + " " + customerRs.getString("lastName");
-			} else {
-				out.println("<div class='alert alert-danger'>Invalid customer ID or password.</div>");
-				return;
-			}
-	
-			// Get the shopping cart from the session
-			@SuppressWarnings("unchecked")
-			HashMap<String, ArrayList<Object>> productList = (HashMap<String, ArrayList<Object>>) session.getAttribute("productList");
-			if (productList == null || productList.isEmpty()) {
-				out.println("<div class='alert alert-danger'>Shopping cart is empty.</div>");
-				return;
-			}
-	
-			// Insert Order Summary
-			PreparedStatement orderStmt = conn.prepareStatement(
-				"INSERT INTO OrderSummary (customerId, orderDate, totalAmount) VALUES (?, GETDATE(), 0)",
-				Statement.RETURN_GENERATED_KEYS);
-			orderStmt.setInt(1, Integer.parseInt(customerId));
-			orderStmt.executeUpdate();
-	
-			ResultSet orderKeys = orderStmt.getGeneratedKeys();
-			int orderId = 0;
-			if (orderKeys.next()) {
-				orderId = orderKeys.getInt(1);
-			}
-	
-			// Insert Products into OrderProduct
-			double totalAmount = 0;
-			PreparedStatement productStmt = conn.prepareStatement(
-				"INSERT INTO OrderProduct (orderId, productId, quantity, price) VALUES (?, ?, ?, ?)");
-	
-			for (Map.Entry<String, ArrayList<Object>> entry : productList.entrySet()) {
+					try {
+						// Retrieve customer ID and password from session
+						String customerId = (String) session.getAttribute("customerId");
+						String customerPassword = (String) session.getAttribute("customerPassword");
+
+						// Ensure customer ID and password are present in session
+						if (customerId == null || customerPassword == null) {
+							out.println("<div class='alert alert-danger'>Session expired. Please log in again.</div>");
+							return;
+						}
+
+						// Attempt to connect to the database
+						conn = DriverManager.getConnection(url, uid, pw);
+
+						// Get the shopping cart from the session
+						@SuppressWarnings("unchecked")
+						HashMap<String, ArrayList<Object>> productList = (HashMap<String, ArrayList<Object>>) session.getAttribute("productList");
+						if (productList == null || productList.isEmpty()) {
+							out.println("<div class='alert alert-danger'>Shopping cart is empty.</div>");
+							return;
+						}
+
+						// Process the order and display confirmation
+						// (Add your order processing logic here)
+
+						// Display order details
+						out.println("<h2>Order Details</h2>");
+						out.println("<table class='table table-bordered'>");
+						out.println("<thead><tr><th>Product</th><th>Quantity</th><th>Price</th><th>Total</th></tr></thead>");
+						out.println("<tbody>");
+
+						double grandTotal = 0.0;
+						for (Map.Entry<String, ArrayList<Object>> entry : productList.entrySet()) {
 							String productId = entry.getKey();
 							ArrayList<Object> productDetails = entry.getValue();
 							String productName = (String) productDetails.get(1);
@@ -116,17 +152,25 @@
 						out.println("<tfoot><tr><th colspan='3'>Grand Total</th><th>" + NumberFormat.getCurrencyInstance().format(grandTotal) + "</th></tr></tfoot>");
 						out.println("</table>");
 
-			out.println("<div class='alert alert-success'>Order placed successfully!</div>");
+						out.println("<div class='alert alert-success'>Order placed successfully!</div>");
 
 						conn.close();
-		} catch (Exception e) {
-			if (conn != null) conn.rollback();
-			out.println("<div class='alert alert-danger'>Error: " + e.getMessage() + "</div>");
-		} finally {
-			if (conn != null) conn.close();
-		}
-	%>
-</div>
+					} catch (Exception e) {
+						e.printStackTrace();
+						out.println("<div class='alert alert-danger'>An error occurred while processing your order. Please try again.</div>");
+					} finally {
+						if (conn != null) {
+							try {
+								conn.close();
+							} catch (SQLException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+				%>
+			</div>
+		</div>
+	</div>
 
 	<!-- Footer Section -->
 	<footer class="footer text-light mt-5 py-4" style="background-color: midnightblue;">

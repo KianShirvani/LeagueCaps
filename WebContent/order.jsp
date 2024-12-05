@@ -27,61 +27,6 @@
 			<img src="img/logo.png" alt="SQL Cap Shop" height="100" class="mr-2"> <!-- Replace with your logo -->
 			LeagueCaps
 		</a>
-
-		<!-- Shop Dropdown Button -->
-		<div class="dropdown mx-3 ml-2">
-			<button class="btn btn-warning btn-lg dropdown-toggle" type="button" id="shopDropdown"
-				data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				Shop
-			</button>
-			<div class="dropdown-menu" aria-labelledby="shopDropdown">
-				<a class="dropdown-item" href="listprod.jsp?category=MLB Caps">MLB</a>
-				<a class="dropdown-item" href="listprod.jsp?category=NFL Caps">NFL</a>
-				<a class="dropdown-item" href="listprod.jsp?category=NBA Caps">NBA</a>
-				<div class="dropdown-divider"></div>
-				<a class="dropdown-item" href="listprod.jsp">Shop All</a>
-			</div>
-		</div>
-
-		<!-- Navbar Links -->
-		<div class="collapse navbar-collapse" id="navbarNav">
-			<ul class="navbar-nav ml-auto align-items-center w-100">
-				<!-- Search Bar -->
-				<li class="nav-item flex-grow-1">
-					<form class="form-inline my-2 my-lg-1 w-100">
-						<input class="form-control mr-3 w-75" type="search"
-							placeholder="Search for Your Favourite Team!" aria-label="Search"
-							style="flex-grow: 1; height: 45px;">
-						<button class="btn btn-outline-light my-2 my-sm-0 mr-4" type="submit">Search</button>
-					</form>
-				</li>
-
-				<!-- Dynamic User Greeting or Sign In -->
-				<li class="nav-item">
-					<% String authenticatedUser=(String) session.getAttribute("authenticatedUser"); if
-						(authenticatedUser !=null) { %>
-						<a href="logout.jsp" class="btn btn-primary btn-lg mx-2">Welcome: <%= authenticatedUser %></a>
-						<% } else { %>
-							<a href="login.jsp" class="btn btn-primary btn-lg mx-2">Sign In</a>
-							<% } %>
-				</li>
-
-				<!-- Create Account Button -->
-				<% if (authenticatedUser==null) { // Only display if user is not logged in %>
-					<li class="nav-item">
-						<a href="createAccount.jsp" class="btn btn-success btn-lg mx-2">Create Account</a>
-					</li>
-					<% } %>
-
-						<!-- Cart Button -->
-						<li class="nav-item">
-							<a href="showcart.jsp">
-								<img src="img/cart-icon.jpg" alt="Cart" style="height: 40px; width: 40px;" class="mx-2">
-								<!-- Replace with your cart image -->
-							</a>
-						</li>
-			</ul>
-		</div>
 	</nav>
 
 	<div class="container mt-5">
@@ -151,59 +96,29 @@
 				"INSERT INTO OrderProduct (orderId, productId, quantity, price) VALUES (?, ?, ?, ?)");
 	
 			for (Map.Entry<String, ArrayList<Object>> entry : productList.entrySet()) {
-				ArrayList<Object> product = entry.getValue();
-	
-				String productId = (String) product.get(0);
-				String productName = (String) product.get(1);
-				double price = Double.parseDouble(product.get(2).toString());
-				int quantity = Integer.parseInt(product.get(3).toString());
-				double subtotal = quantity * price;
-	
-				productStmt.setInt(1, orderId);
-				productStmt.setInt(2, Integer.parseInt(productId));
-				productStmt.setInt(3, quantity);
-				productStmt.setDouble(4, price);
-				productStmt.executeUpdate();
-	
-				totalAmount += subtotal;
-			}
-	
-			// Update Order Total
-			PreparedStatement updateTotalStmt = conn.prepareStatement(
-				"UPDATE OrderSummary SET totalAmount = ? WHERE orderId = ?");
-			updateTotalStmt.setDouble(1, totalAmount);
-			updateTotalStmt.setInt(2, orderId);
-			updateTotalStmt.executeUpdate();
-	
-			conn.commit();
-	
-			// Display Order Details and Confirmation
-			NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
+							String productId = entry.getKey();
+							ArrayList<Object> productDetails = entry.getValue();
+							String productName = (String) productDetails.get(1);
+							int quantity = (int) productDetails.get(3);
+							double price = Double.parseDouble((String) productDetails.get(2));
+							double total = quantity * price;
+							grandTotal += total;
+
+							out.println("<tr>");
+							out.println("<td>" + productName + "</td>");
+							out.println("<td>" + quantity + "</td>");
+							out.println("<td>" + NumberFormat.getCurrencyInstance().format(price) + "</td>");
+							out.println("<td>" + NumberFormat.getCurrencyInstance().format(total) + "</td>");
+							out.println("</tr>");
+						}
+
+						out.println("</tbody>");
+						out.println("<tfoot><tr><th colspan='3'>Grand Total</th><th>" + NumberFormat.getCurrencyInstance().format(grandTotal) + "</th></tr></tfoot>");
+						out.println("</table>");
+
 			out.println("<div class='alert alert-success'>Order placed successfully!</div>");
-			out.println("<h3>Order Details</h3>");
-			out.println("<table class='table table-striped'>");
-			out.println("<thead><tr><th>Order ID</th><th>Product ID</th><th>Product Name</th><th>Quantity</th><th>Price</th><th>Subtotal</th></tr></thead>");
-			out.println("<tbody>");
-			for (Map.Entry<String, ArrayList<Object>> entry : productList.entrySet()) {
-				ArrayList<Object> product = entry.getValue();
-				String productId = (String) product.get(0);
-				String productName = (String) product.get(1);
-				double price = Double.parseDouble(product.get(2).toString());
-				int quantity = Integer.parseInt(product.get(3).toString());
-				double subtotal = quantity * price;
-	
-				out.println("<tr><td>" + orderId + "</td><td>" + productId + "</td><td>" + productName + "</td><td>" + quantity + "</td><td>" + currencyFormat.format(price) + "</td><td>" + currencyFormat.format(subtotal) + "</td></tr>");
-			}
-			out.println("</tbody>");
-			out.println("<tfoot>");
-			out.println("<tr><td colspan='5' class='text-end'><b>Total:</b></td><td>" + currencyFormat.format(totalAmount) + "</td></tr>");
-			out.println("</tfoot>");
-			out.println("</table>");
-			out.println("<h4>Order completed. Will be shipped soon...</h4>");
-			out.println("<p>Your order reference number is: " + orderId + "</p>");
-			out.println("<p>Shipping to customer: " + customerId + "</p>");
-			out.println("<p>Name: " + customerName + "</p>");
-			session.setAttribute("productList", null);
+
+						conn.close();
 		} catch (Exception e) {
 			if (conn != null) conn.rollback();
 			out.println("<div class='alert alert-danger'>Error: " + e.getMessage() + "</div>");

@@ -1,3 +1,57 @@
+<%@ page import="java.sql.*" %>
+<%@ page import="javax.sql.*" %>
+<%@ page import="javax.naming.*" %>
+<%
+    String errorMessage = "";
+    if ("POST".equalsIgnoreCase(request.getMethod())) {
+        String customerId = request.getParameter("customerId");
+        String customerPassword = request.getParameter("customerPassword");
+
+        if (customerId == null || customerPassword == null || customerId.isEmpty() || customerPassword.isEmpty()) {
+            errorMessage = "Customer ID and Password must be filled out";
+        } else {
+            // Database connection and validation logic
+            Connection conn = null;
+            try {
+                String url = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";
+                String uid = "sa";
+                String pw = "304#sa#pw";
+                conn = DriverManager.getConnection(url, uid, pw);
+
+                String sql = "SELECT * FROM customer WHERE customerId = ? AND password = ?";
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                stmt.setString(1, customerId);
+                stmt.setString(2, customerPassword);
+                ResultSet rs = stmt.executeQuery();
+
+                if (!rs.next()) {
+                    errorMessage = "Invalid Customer ID or Password";
+                } else {
+                    // Successful login, store customerId and customerPassword in session and redirect to order page
+                    session.setAttribute("customerId", customerId);
+                    session.setAttribute("customerPassword", customerPassword);
+                    response.sendRedirect("order.jsp");
+                    return;
+                }
+
+                rs.close();
+                stmt.close();
+                conn.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                errorMessage = "An error occurred while validating your credentials. Please try again.";
+            } finally {
+                if (conn != null) {
+                    try {
+                        conn.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,6 +59,18 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 	<link rel="stylesheet" href="styles.css">
 	<link rel="shortcut icon" type="image/x-icon" href="img/logo.png" />
+    <script>
+        function validateForm() {
+            var customerId = document.getElementById("customerId").value;
+            var customerPassword = document.getElementById("customerPassword").value;
+
+            if (customerId == "" || customerPassword == "") {
+                document.getElementById("errorMessage").innerText = "Customer ID and Password must be filled out";
+                return false;
+            }
+            return true;
+        }
+    </script>
 </head>
 <body>
 
@@ -83,7 +149,7 @@
         </div>
         <div class="card-body">
             <p class="text-center">Enter your customer ID and password to complete the transaction:</p>
-            <form method="get" action="order.jsp" class="d-flex flex-column align-items-center">
+            <form method="post" action="checkout.jsp" class="d-flex flex-column align-items-center" onsubmit="return validateForm()">
                 <div class="mb-3" style="width: 300px;">
                     <label for="customerId" class="form-label"></label>
                     <input type="text" id="customerId" name="customerId" class="form-control" placeholder="Customer ID" required>
@@ -92,6 +158,7 @@
                     <label for="customerPassword" class="form-label"></label>
                     <input type="password" id="customerPassword" name="customerPassword" class="form-control" placeholder="Password" required>
                 </div>
+                <div id="errorMessage" class="text-danger mb-3"><%= errorMessage %></div>
                 <div class="d-flex justify-content-between" style="width: 300px;">
                     <a href="paymentInfo.jsp" class="btn btn-primary">Previous</a>
                     <a href="index.jsp" class="btn btn-secondary">Home</a>

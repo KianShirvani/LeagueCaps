@@ -87,16 +87,16 @@
 <div class="container my-4">
 
 <% 
-        String errorMessage = (String) session.getAttribute("errorMessage");
-        if (errorMessage != null) {
-    %>
-        <div class="alert alert-danger text-center" role="alert">
-            <%= errorMessage %>
-        </div>
-    <%
-            session.removeAttribute("errorMessage"); // Clear the error message after displaying it
-        }
-    %>
+    String errorMessage = (String) session.getAttribute("errorMessage");
+    if (errorMessage != null) {
+%>
+    <div class="alert alert-danger text-center" role="alert" style="background-color: red; color: white; border: 2px solid black;">
+        <strong><%= errorMessage %></strong>
+    </div>
+<%
+        session.removeAttribute("errorMessage"); // Clear the error message after displaying it
+    }
+%>
 
 <div class="container mt-5">
     <div class="card">

@@ -50,7 +50,7 @@
                     <input type="text" id="country" name="country" class="form-control" placeholder="Country" required>
                 </div>
                 <div class="d-flex justify-content-between" style="width: 300px;">
-                    <a href="checkout.jsp" class="btn btn-primary">Previous</a>
+                    <a href="addcart.jsp" class="btn btn-primary">Previous</a>
                     <a href="index.jsp" class="btn btn-secondary">Home</a>
                     <input type="submit" value="Submit" class="btn btn-success">
                 </div>

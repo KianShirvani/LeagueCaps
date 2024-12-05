@@ -169,7 +169,7 @@
             %>
         </div>
         <div class="card-footer text-center">
-            <a href="checkout.jsp" class="btn btn-success btn-lg">Check Out</a>
+            <a href="shippingInfo.jsp" class="btn btn-success btn-lg">Check Out</a>
             <a href="listprod.jsp?productName=" class="btn btn-secondary btn-lg">Continue Shopping</a>
         </div>
     </div>

@@ -5,9 +5,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>The SQL Cap Shop</title>
+    <title>LeagueCaps</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="styles.css"> 
+    <link rel="shortcut icon" type="image/x-icon" href="img/logo.png" />
+
 </head>
 <body>
 

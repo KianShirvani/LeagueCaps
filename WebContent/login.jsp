@@ -5,6 +5,8 @@
 	<title>Login Screen</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 	<link rel="stylesheet" href="styles.css">
+	<link rel="shortcut icon" type="image/x-icon" href="img/logo.png" />
+
 	<style>
 		body {
 			background-color: #f5f5f5;

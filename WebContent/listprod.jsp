@@ -88,7 +88,7 @@
 
 
 <div class="container my-4">
-    <h1>Search Results</h1>
+    <h1 class="text-center">Search Results</h1>
     <%
         // Get search parameters
         String name = request.getParameter("productName");

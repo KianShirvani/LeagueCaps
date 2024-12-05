@@ -86,6 +86,18 @@
 
 <div class="container my-4">
 
+<% 
+        String errorMessage = (String) session.getAttribute("errorMessage");
+        if (errorMessage != null) {
+    %>
+        <div class="alert alert-danger text-center" role="alert">
+            <%= errorMessage %>
+        </div>
+    <%
+            session.removeAttribute("errorMessage"); // Clear the error message after displaying it
+        }
+    %>
+
 <div class="container mt-5">
     <div class="card">
         <div class="card-header bg-primary text-white text-center">

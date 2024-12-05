@@ -8,10 +8,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SQL Cap Shop</title>
+    <title>LeagueCaps</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 	<link rel="stylesheet" href="styles.css"> 
+    <link rel="shortcut icon" type="image/x-icon" href="img/logo.png" />
+
 
     <style>
         .category-buttons a {
@@ -20,6 +22,28 @@
     </style>
 </head>
 <body>
+
+<!-- Black Friday Sale Popup Modal -->
+<div class="modal fade" id="blackFridayModal" tabindex="-1" role="dialog" aria-labelledby="blackFridayModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: midnightblue; color: white;">
+                <h5 class="modal-title" id="blackFridayModalLabel">Black Friday Sale Extended!</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <!-- Add your image here -->
+                <img src="img/blackfriday.jpg" alt="Black Friday Sale" class="img-fluid mb-3" style="max-height: 300px; border-radius: 5px;">
+                <p>Great news! We've extended our Black Friday Sale! Use code 'COSC304' and don't miss out on amazing deals.</p>
+                <a href="listprod.jsp" class="btn btn-warning btn-lg">Shop Now!</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <!-- Navbar Section -->
 <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: midnightblue;">
@@ -51,13 +75,16 @@
     <!-- Navbar Links -->
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ml-auto align-items-center w-100">
-            <!-- Search Bar -->
-            <li class="nav-item flex-grow-1">
-                <form class="form-inline my-2 my-lg-1 w-100">
-                    <input class="form-control mr-3 w-75" type="search" placeholder="Search for Your Favourite Team!" aria-label="Search" style="flex-grow: 1; height: 45px;">
-                    <button class="btn btn-outline-light my-2 my-sm-0 mr-4" type="submit">Search</button>
-                </form>
-            </li>
+           <!-- Search Bar -->
+<!-- Search Bar -->
+<li class="nav-item flex-grow-1">
+    <form class="form-inline my-2 my-lg-1 w-100" action="listprod.jsp" method="get">
+        <!-- Update name to 'productName' to match listprod.jsp -->
+        <input class="form-control mr-3 w-75" type="search" name="productName" placeholder="Search for Your Favourite Team!" aria-label="Search" style="flex-grow: 1; height: 45px;">
+        <button class="btn btn-outline-light my-2 my-sm-0 mr-4" type="submit">Search</button>
+    </form>
+</li>
+
 
             <!-- Dynamic User Greeting or Sign In -->
             <li class="nav-item">
@@ -273,13 +300,74 @@
 
 
 <!-- Footer Section -->
-<footer class="footer text-light text-center py-3" style="background-color: midnightblue;">
-    <p>&copy; 2024 SQL Cap Shop. All Rights Reserved.</p>
+<footer class="footer text-light py-4" style="background-color: midnightblue;">
+    <div class="container">
+        <div class="row">
+            <!-- About Section -->
+            <div class="col-md-3">
+                <h5>About</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-light">About Us</a></li>
+                    <li><a href="#" class="text-light">Career Opportunities</a></li>
+                    <li><a href="#" class="text-light">Affiliates</a></li>
+                </ul>
+            </div>
+
+            <!-- Shop Section -->
+            <div class="col-md-3">
+                <h5>Shop</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-light">Email Gift Cards</a></li>
+                    <li><a href="#" class="text-light">Gift Card Balance</a></li>
+                    <li><a href="#" class="text-light">Coupons</a></li>
+                    <li><a href="#" class="text-light">Mobile App</a></li>
+                    <li><a href="#" class="text-light">Student Discount</a></li>
+                </ul>
+            </div>
+
+            <!-- Support Section -->
+            <div class="col-md-3">
+                <h5>Support</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-light">Contact Us</a></li>
+                    <li><a href="#" class="text-light">Return Policy</a></li>
+                    <li><a href="#" class="text-light">Sizing Help</a></li>
+                    <li><a href="#" class="text-light">Store Locator</a></li>
+                </ul>
+            </div>
+
+            <!-- Legal Section -->
+            <div class="col-md-3">
+                <h5>Legal</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-light">Terms of Use</a></li>
+                    <li><a href="#" class="text-light">Privacy Statement</a></li>
+                    <li><a href="#" class="text-light">Accessibility</a></li>
+                    <li><a href="#" class="text-light">Ad Choices</a></li>
+                    <li><a href="#" class="text-light">Your Privacy Choices</a></li>
+                    <li><a href="#" class="text-light">Modern Slavery Act Policy</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <hr class="bg-light">
+        <div class="text-center">
+            <p>&copy; 2024 LeagueCaps. All Rights Reserved.</p>
+        </div>
+    </div>
 </footer>
 
 <!-- Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.4/dist/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    // Automatically show the modal when the page loads
+    $(document).ready(function () {
+        $('#blackFridayModal').modal('show');
+    });
+</script>
+
 </body>
 </html>

@@ -8,11 +8,11 @@
 <html>
 <head>
 	
-    <title>The SQL Cap Shop</title>
+    <title>LeagueCaps</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-        <link rel="stylesheet" href="styles.css"> 
-</head>
+        <link rel="stylesheet" href="styles.css">
+    </head>
 <body>
 
 <!-- Navbar Section -->
@@ -174,5 +174,67 @@
         </div>
     </div>
 </div>
+
+
+	<!-- Footer Section -->
+	<footer class="footer text-light mt-5 py-4" style="background-color: midnightblue;">
+		<div class="container">
+			<div class="row">
+				<!-- About Section -->
+				<div class="col-md-3">
+					<h5>About</h5>
+					<ul class="list-unstyled">
+						<li><a href="#" class="text-light">About Us</a></li>
+						<li><a href="#" class="text-light">Career Opportunities</a></li>
+						<li><a href="#" class="text-light">Affiliates</a></li>
+					</ul>
+				</div>
+
+				<!-- Shop Section -->
+				<div class="col-md-3">
+					<h5>Shop</h5>
+					<ul class="list-unstyled">
+						<li><a href="#" class="text-light">Email Gift Cards</a></li>
+						<li><a href="#" class="text-light">Gift Card Balance</a></li>
+						<li><a href="#" class="text-light">Coupons</a></li>
+						<li><a href="#" class="text-light">Mobile App</a></li>
+						<li><a href="#" class="text-light">Student Discount</a></li>
+					</ul>
+				</div>
+
+				<!-- Support Section -->
+				<div class="col-md-3">
+					<h5>Support</h5>
+					<ul class="list-unstyled">
+						<li><a href="#" class="text-light">Contact Us</a></li>
+						<li><a href="#" class="text-light">Return Policy</a></li>
+						<li><a href="#" class="text-light">Sizing Help</a></li>
+						<li><a href="#" class="text-light">Store Locator</a></li>
+					</ul>
+				</div>
+
+				<!-- Legal Section -->
+				<div class="col-md-3">
+					<h5>Legal</h5>
+					<ul class="list-unstyled">
+						<li><a href="#" class="text-light">Terms of Use</a></li>
+						<li><a href="#" class="text-light">Privacy Statement</a></li>
+						<li><a href="#" class="text-light">Accessibility</a></li>
+						<li><a href="#" class="text-light">Ad Choices</a></li>
+						<li><a href="#" class="text-light">Your Privacy Choices</a></li>
+						<li><a href="#" class="text-light">Modern Slavery Act Policy</a></li>
+					</ul>
+				</div>
+			</div>
+
+			<hr class="bg-light">
+			<div class="text-center">
+				<p>&copy; 2024 LeagueCaps. All Rights Reserved.</p>
+			</div>
+		</div>
+	</footer>
+
+
+
 </body>
 </html>

@@ -5,12 +5,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>The SQL Cap Shop</title>
+    <title>LeagueCaps</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="styles.css"> 
+    <link rel="shortcut icon" type="image/x-icon" href="img/logo.png" />
 
 </head>
 <body>
+
 
 <!-- Navbar Section -->
 <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: midnightblue;">
@@ -42,13 +44,16 @@
     <!-- Navbar Links -->
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ml-auto align-items-center w-100">
-            <!-- Search Bar -->
-            <li class="nav-item flex-grow-1">
-                <form class="form-inline my-2 my-lg-1 w-100">
-                    <input class="form-control mr-3 w-75" type="search" placeholder="Search for Your Favourite Team!" aria-label="Search" style="flex-grow: 1; height: 45px;">
-                    <button class="btn btn-outline-light my-2 my-sm-0 mr-4" type="submit">Search</button>
-                </form>
-            </li>
+           <!-- Search Bar -->
+<!-- Search Bar -->
+<li class="nav-item flex-grow-1">
+    <form class="form-inline my-2 my-lg-1 w-100" action="listprod.jsp" method="get">
+        <!-- Update name to 'productName' to match listprod.jsp -->
+        <input class="form-control mr-3 w-75" type="search" name="productName" placeholder="Search for Your Favourite Team!" aria-label="Search" style="flex-grow: 1; height: 45px;">
+        <button class="btn btn-outline-light my-2 my-sm-0 mr-4" type="submit">Search</button>
+    </form>
+</li>
+
 
             <!-- Dynamic User Greeting or Sign In -->
             <li class="nav-item">
@@ -80,79 +85,57 @@
         </ul>
     </div>
 </nav>
-    
 
-<div class ="container my-4">
-<h1>Search for the products you want to buy:</h1>
 
-<form method="get" action="listprod.jsp" class="mb-4">
-    <input type="text" name="productName" size="50" class="form-control mb-2" placeholder="Enter product name">
-    <select name="category" class="form-control mb-2">
-        <option value="">All Categories</option>
-        <option value="NFL Caps">NFL Caps</option>
-        <option value="MLB Caps">MLB Caps</option>
-        <option value="NBA Caps">NBA Caps</option>
-    </select>
-    <button type="submit" class="btn btn-primary">Submit</button>
-    <button type="reset" class="btn btn-secondary">Reset</button> 
-    <small class="form-text text-muted">(Leave blank for all products)</small>
-</form>
+<div class="container my-4">
+    <h1>Search Results</h1>
+    <%
+        // Get search parameters
+        String name = request.getParameter("productName");
+        String categoryFilter = request.getParameter("category");
 
-<%
-    // Get search parameters
-    String name = request.getParameter("productName");
-    String categoryFilter = request.getParameter("category");
+        // Database connection details
+        String url = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";
+        String uid = "sa";
+        String pw = "304#sa#pw";
+        NumberFormat currency = NumberFormat.getCurrencyInstance();
 
-    try {
-        Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-    } catch (java.lang.ClassNotFoundException e) {
-        out.println("ClassNotFoundException: " + e);
-    }
-
-    String url = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";
-    String uid = "sa";
-    String pw = "304#sa#pw";
-    NumberFormat currency = NumberFormat.getCurrencyInstance();
-
-    try (Connection con = DriverManager.getConnection(url, uid, pw)) {
-        String sql = "SELECT product.productId, product.productName, product.productDesc, product.productPrice, category.categoryName " +
-                     "FROM product " +
-                     "JOIN category ON product.categoryId = category.categoryId";
-        if ((name != null && !name.trim().isEmpty()) || (categoryFilter != null && !categoryFilter.isEmpty())) {
-            sql += " WHERE";
-            if (name != null && !name.trim().isEmpty()) {
-                sql += " product.productName LIKE ?";
+        try (Connection con = DriverManager.getConnection(url, uid, pw)) {
+            String sql = "SELECT product.productId, product.productName, product.productDesc, product.productPrice, category.categoryName " +
+                         "FROM product " +
+                         "JOIN category ON product.categoryId = category.categoryId";
+            
+            if ((name != null && !name.trim().isEmpty()) || (categoryFilter != null && !categoryFilter.isEmpty())) {
+                sql += " WHERE";
+                if (name != null && !name.trim().isEmpty()) {
+                    sql += " product.productName LIKE ?";
+                    if (categoryFilter != null && !categoryFilter.isEmpty()) {
+                        sql += " AND";
+                    }
+                }
                 if (categoryFilter != null && !categoryFilter.isEmpty()) {
-                    sql += " AND";
+                    sql += " category.categoryName = ?";
                 }
             }
-            if (categoryFilter != null && !categoryFilter.isEmpty()) {
-                sql += " category.categoryName = ?";
-            }
-        }
 
-        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
-            int paramIndex = 1;
-            if (name != null && !name.trim().isEmpty()) {
-                pstmt.setString(paramIndex++, "%" + name + "%");
-            }
-            if (categoryFilter != null && !categoryFilter.isEmpty()) {
-                pstmt.setString(paramIndex, categoryFilter);
-            }
+            try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+                int paramIndex = 1;
+                if (name != null && !name.trim().isEmpty()) {
+                    pstmt.setString(paramIndex++, "%" + name + "%");
+                }
+                if (categoryFilter != null && !categoryFilter.isEmpty()) {
+                    pstmt.setString(paramIndex, categoryFilter);
+                }
 
-            ResultSet rst = pstmt.executeQuery();
+                ResultSet rst = pstmt.executeQuery();
 
-            // Start the container and row for the cards
-            out.println("<div class='container'>");
-            out.println("<div class='row'>");
-
+                out.println("<div class='row'>");
                 while (rst.next()) {
                     int productId = rst.getInt("productId");
                     String productName = rst.getString("productName");
                     String productDesc = rst.getString("productDesc");
                     String productPrice = currency.format(rst.getDouble("productPrice"));
                     String categoryName = rst.getString("categoryName");
-                
                     String imagePath = "img/" + productId + ".jpg"; // Path to product image
                     String addToCartLink = "addcart.jsp?id=" + productId + "&name=" + URLEncoder.encode(productName, "UTF-8") 
                                          + "&price=" + rst.getDouble("productPrice");
@@ -174,21 +157,75 @@
                     out.println("    </div>");
                     out.println("</div>");
                 }
-                
-                // Close the row and container
                 out.println("</div>");
-                out.println("</div>");
-
-            rst.close();
+                rst.close();
+            }
+        } catch (SQLException ex) {
+            out.println("<p class='text-danger'>Error: " + ex.getMessage() + "</p>");
         }
-    } catch (SQLException ex) {
-        out.println("SQLException: " + ex);
-    }
-%>
+    %>
 </div>
 
+
+	<!-- Footer Section -->
+	<footer class="footer text-light mt-5 py-4" style="background-color: midnightblue;">
+		<div class="container">
+			<div class="row">
+				<!-- About Section -->
+				<div class="col-md-3">
+					<h5>About</h5>
+					<ul class="list-unstyled">
+						<li><a href="#" class="text-light">About Us</a></li>
+						<li><a href="#" class="text-light">Career Opportunities</a></li>
+						<li><a href="#" class="text-light">Affiliates</a></li>
+					</ul>
+				</div>
+
+				<!-- Shop Section -->
+				<div class="col-md-3">
+					<h5>Shop</h5>
+					<ul class="list-unstyled">
+						<li><a href="#" class="text-light">Email Gift Cards</a></li>
+						<li><a href="#" class="text-light">Gift Card Balance</a></li>
+						<li><a href="#" class="text-light">Coupons</a></li>
+						<li><a href="#" class="text-light">Mobile App</a></li>
+						<li><a href="#" class="text-light">Student Discount</a></li>
+					</ul>
+				</div>
+
+				<!-- Support Section -->
+				<div class="col-md-3">
+					<h5>Support</h5>
+					<ul class="list-unstyled">
+						<li><a href="#" class="text-light">Contact Us</a></li>
+						<li><a href="#" class="text-light">Return Policy</a></li>
+						<li><a href="#" class="text-light">Sizing Help</a></li>
+						<li><a href="#" class="text-light">Store Locator</a></li>
+					</ul>
+				</div>
+
+				<!-- Legal Section -->
+				<div class="col-md-3">
+					<h5>Legal</h5>
+					<ul class="list-unstyled">
+						<li><a href="#" class="text-light">Terms of Use</a></li>
+						<li><a href="#" class="text-light">Privacy Statement</a></li>
+						<li><a href="#" class="text-light">Accessibility</a></li>
+						<li><a href="#" class="text-light">Ad Choices</a></li>
+						<li><a href="#" class="text-light">Your Privacy Choices</a></li>
+						<li><a href="#" class="text-light">Modern Slavery Act Policy</a></li>
+					</ul>
+				</div>
+			</div>
+
+			<hr class="bg-light">
+			<div class="text-center">
+				<p>&copy; 2024 LeagueCaps. All Rights Reserved.</p>
+			</div>
+		</div>
+	</footer>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.4/dist/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body> 
+</body>
 </html>

@@ -21,6 +21,28 @@
 </head>
 <body>
 
+<!-- Black Friday Sale Popup Modal -->
+<div class="modal fade" id="blackFridayModal" tabindex="-1" role="dialog" aria-labelledby="blackFridayModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: midnightblue; color: white;">
+                <h5 class="modal-title" id="blackFridayModalLabel">Black Friday Sale Extended!</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <!-- Add your image here -->
+                <img src="img/blackfriday.jpg" alt="Black Friday Sale" class="img-fluid mb-3" style="max-height: 300px; border-radius: 5px;">
+                <p>Great news! We've extended our Black Friday Sale! Use code 'COSC304' and don't miss out on amazing deals.</p>
+                <a href="listprod.jsp" class="btn btn-warning btn-lg">Shop Now!</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 <!-- Navbar Section -->
 <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: midnightblue;">
     <!-- Logo and Brand Name -->
@@ -334,5 +356,13 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.4/dist/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    // Automatically show the modal when the page loads
+    $(document).ready(function () {
+        $('#blackFridayModal').modal('show');
+    });
+</script>
+
 </body>
 </html>

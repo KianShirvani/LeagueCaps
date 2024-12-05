@@ -84,19 +84,7 @@
 </nav>
 
 <div class="container my-4">
-    <% 
-        // Display error message if it exists
-        String errorMessage = (String) session.getAttribute("errorMessage");
-        if (errorMessage != null) {
-    %>
-        <div class="alert alert-danger text-center" role="alert">
-            <%= errorMessage %>
-        </div>
-    <%
-        session.removeAttribute("errorMessage"); // Clear the error message after displaying it
-        }
-    %>
-
+    
     <%
         // Database credentials
         String dbUrl = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";

@@ -1,3 +1,21 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%
+    if ("POST".equalsIgnoreCase(request.getMethod())) {
+        // Retrieve payment information from the form
+        String paymentType = request.getParameter("paymentType");
+        String paymentNumber = request.getParameter("paymentNumber");
+        String paymentDate = request.getParameter("paymentDate");
+
+        // Store payment information in session attributes
+        session.setAttribute("paymentType", paymentType);
+        session.setAttribute("paymentNumber", paymentNumber);
+        session.setAttribute("paymentDate", paymentDate);
+
+        // Redirect to checkout.jsp
+        response.sendRedirect("checkout.jsp");
+        return;
+    }
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,9 +31,9 @@
     </style>
     <script>
         function validateForm() {
-            var paymentType = document.getElementById("paymentType").value;
-            var paymentNumber = document.getElementById("paymentNumber").value;
-            var paymentDate = document.getElementById("paymentDate").value;
+            var paymentType = document.getElementById("paymentType").value.trim();
+            var paymentNumber = document.getElementById("paymentNumber").value.trim();
+            var paymentDate = document.getElementById("paymentDate").value.trim();
 
             var paymentTypeRegex = /^[a-zA-Z\s]+$/;
             var paymentNumberRegex = /^[0-9]+$/;
@@ -128,7 +146,7 @@
         <div class="card-body">
             <p class="text-center">Enter your payment information:</p>
             <div id="errorMessages" class="mt-3"></div> <!-- Error Messages Section -->
-            <form method="get" action="checkout.jsp" class="d-flex flex-column align-items-center" onsubmit="return validateForm()">
+            <form method="post" action="paymentInfo.jsp" class="d-flex flex-column align-items-center" onsubmit="return validateForm()">
                 <div class="mb-3" style="width: 300px;">
                     <label for="paymentType" class="form-label"></label>
                     <input type="text" id="paymentType" name="paymentType" class="form-control" placeholder="Payment Type" required>

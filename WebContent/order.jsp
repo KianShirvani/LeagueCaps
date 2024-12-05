@@ -152,7 +152,34 @@
 						out.println("<tfoot><tr><th colspan='3'>Grand Total</th><th>" + NumberFormat.getCurrencyInstance().format(grandTotal) + "</th></tr></tfoot>");
 						out.println("</table>");
 
-						out.println("<div class='alert alert-success'>Order placed successfully!</div>");
+						// Retrieve shipping information from session
+						String shiptoAddress = (String) session.getAttribute("shiptoAddress");
+						String shiptoCity = (String) session.getAttribute("shiptoCity");
+						String shiptoState = (String) session.getAttribute("shiptoState");
+						String shiptoPostalCode = (String) session.getAttribute("shiptoPostalCode");
+						String shiptoCountry = (String) session.getAttribute("shiptoCountry");
+
+						// Insert order summary into the database
+						String insertOrderSQL = "INSERT INTO ordersummary (customerId, shiptoAddress, shiptoCity, shiptoState, shiptoPostalCode, shiptoCountry, totalAmount) VALUES (?, ?, ?, ?, ?, ?, ?)";
+						try (PreparedStatement pstmt = conn.prepareStatement(insertOrderSQL)) {
+							pstmt.setString(1, customerId);
+							pstmt.setString(2, shiptoAddress);
+							pstmt.setString(3, shiptoCity);
+							pstmt.setString(4, shiptoState);
+							pstmt.setString(5, shiptoPostalCode);
+							pstmt.setString(6, shiptoCountry);
+							pstmt.setDouble(7, grandTotal);
+
+							int rowsAffected = pstmt.executeUpdate();
+							if (rowsAffected > 0) {
+								out.println("<div class='alert alert-success'>Order placed successfully!</div>");
+							} else {
+								out.println("<div class='alert alert-danger'>Failed to save order summary.</div>");
+							}
+						} catch (SQLException e) {
+							e.printStackTrace();
+							out.println("<div class='alert alert-danger'>An error occurred while saving the order summary.</div>");
+						}
 
 						// Clear the shopping cart
 						session.removeAttribute("productList");

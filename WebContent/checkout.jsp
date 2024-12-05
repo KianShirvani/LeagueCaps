@@ -39,7 +39,7 @@
                 conn.close();
             } catch (Exception e) {
                 e.printStackTrace();
-                errorMessage = "An error occurred while validating your credentials. Please try again.";
+                errorMessage = "Invalid Customer ID or Password.";
             } finally {
                 if (conn != null) {
                     try {
@@ -151,6 +151,9 @@
         </div>
         <div class="card-body">
             <p class="text-center">Enter your customer ID and password to complete the transaction:</p>
+            <% if (errorMessage != null && !errorMessage.isEmpty()) { %>
+                <div id="errorMessage" class="alert alert-danger text-center"><%= errorMessage %></div>
+            <% } %>
             <form method="post" action="checkout.jsp" class="d-flex flex-column align-items-center" onsubmit="return validateForm()">
                 <div class="mb-3" style="width: 300px;">
                     <label for="customerId" class="form-label"></label>
@@ -160,7 +163,7 @@
                     <label for="customerPassword" class="form-label"></label>
                     <input type="password" id="customerPassword" name="customerPassword" class="form-control" placeholder="Password" required>
                 </div>
-                <div id="errorMessage" class="text-danger mb-3"><%= errorMessage %></div>
+                
                 <div class="d-flex justify-content-between" style="width: 300px;">
                     <a href="paymentInfo.jsp" class="btn btn-primary">Previous</a>
                     <a href="index.jsp" class="btn btn-secondary">Home</a>

@@ -73,6 +73,26 @@
 </head>
 <body>
 
+<%
+    if ("POST".equalsIgnoreCase(request.getMethod())) {
+        // Retrieve shipping information from the form
+        String shiptoAddress = request.getParameter("address");
+        String shiptoCity = request.getParameter("city");
+        String shiptoState = request.getParameter("state");
+        String shiptoPostalCode = request.getParameter("postalCode");
+        String shiptoCountry = request.getParameter("country");
+
+        // Store shipping information in session attributes
+        session.setAttribute("shiptoAddress", shiptoAddress);
+        session.setAttribute("shiptoCity", shiptoCity);
+        session.setAttribute("shiptoState", shiptoState);
+        session.setAttribute("shiptoPostalCode", shiptoPostalCode);
+        session.setAttribute("shiptoCountry", shiptoCountry);
+
+        // Redirect to paymentInfo.jsp
+        response.sendRedirect("paymentInfo.jsp");
+    }
+%>
     
 	<!-- Navbar Section -->
 	<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: midnightblue;">
@@ -152,7 +172,7 @@
             <p class="text-center">Enter your Shipping Information</p>
 			<!-- Error Messages Section -->
 <div id="errorMessages" class="container mt-3"></div>
-            <form method="get" action="paymentInfo.jsp" class="d-flex flex-column align-items-center" onsubmit="return validateForm()">
+            <form method="post" action="paymentInfo.jsp" class="d-flex flex-column align-items-center" onsubmit="return validateForm()">
                 <div class="mb-3" style="width: 300px;">
                     <label for="address" class="form-label"></label>
                     <input type="text" id="address" name="address" class="form-control" placeholder="Address" required>

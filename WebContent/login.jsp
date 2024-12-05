@@ -1,8 +1,18 @@
+<%@ page import="java.sql.*" %>
+<%@ page import="javax.sql.*" %>
+<%@ page import="javax.naming.*" %>
+<%@ page import="java.util.*" %>
+<%@ page import="java.io.*" %>
+<%@ page import="javax.servlet.*" %>
+<%@ page import="javax.servlet.http.*" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-	<title>Login Screen</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Login</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 	<link rel="stylesheet" href="styles.css">
 	<link rel="shortcut icon" type="image/x-icon" href="img/logo.png" />
@@ -10,9 +20,7 @@
 	<style>
 		body {
 			background-color: #f5f5f5;
-		}
-
-		
+			}
 
 		.center-container {
 			display: flex;
@@ -57,7 +65,7 @@
 			text-decoration: underline;
 		}
 	</style>
-	
+
 	</style>
 </head>
 
@@ -128,25 +136,86 @@
 		</div>
 	</nav>
 
+	<%
+    String errorMessage = "";
+    if ("POST".equalsIgnoreCase(request.getMethod())) {
+        String userId = request.getParameter("userId");
+        String password = request.getParameter("password");
+
+        if (userId == null || password == null || userId.isEmpty() || password.isEmpty()) {
+            errorMessage = "User ID and Password must be filled out";
+        } else {
+            // Database connection and validation logic
+            Connection conn = null;
+            try {
+                String url = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";
+                String uid = "sa";
+                String pw = "304#sa#pw";
+                conn = DriverManager.getConnection(url, uid, pw);
+
+                String sql = "SELECT * FROM customer WHERE userid = ? AND password = ?";
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                stmt.setString(1, userId);
+                stmt.setString(2, password);
+                ResultSet rs = stmt.executeQuery();
+
+                if (!rs.next()) {
+                    errorMessage = "Invalid User ID or Password";
+                } else {
+                    // Successful login, store userId in session and redirect to index page
+                    session.setAttribute("authenticatedUser", userId);
+                    response.sendRedirect("index.jsp");
+                    return;
+                }
+
+                rs.close();
+                stmt.close();
+                conn.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                errorMessage = "An error occurred while validating your credentials. Please try again.";
+            } finally {
+                if (conn != null) {
+                    try {
+                        conn.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+%>
+
 	<!-- Main Content -->
-	<div class="center-container">
-		<div class="login-container">
-			<h3>Log In</h3>
-			<p class="text-center">
-				Not a member? <a href="createAccount.jsp" class="link">Create an account</a>
-			</p>
-			<form name="MyForm" method="post" action="validateLogin.jsp">
-				<div class="form-group">
-					<label for="username">Username:</label>
-					<input type="text" name="username" id="username" class="form-control" required>
+	<div class="container mt-5">
+		<div class="row justify-content-center">
+			<div class="col-md-6">
+				<div class="card">
+					<div class="card-header bg-primary text-white text-center">
+						<h2>Login</h2>
+					</div>
+					<div class="card-body">
+						<form method="post" action="login.jsp">
+							<div class="form-group">
+								<label for="userId">User ID</label>
+								<input type="text" id="userId" name="userId" class="form-control" placeholder="Enter your User ID" required>
+							</div>
+							<div class="form-group">
+								<label for="password">Password</label>
+								<input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
+							</div>
+							<div class="form-group text-center">
+								<button type="submit" class="btn btn-success btn-lg">Login</button>
+							</div>
+							<div class="form-group text-center">
+								<a href="createAccount.jsp" class="btn btn-link">Create an Account</a>
+							</div>
+						</form>
+						<div id="errorMessage" class="text-danger text-center"><%= errorMessage %></div>
+					</div>
 				</div>
-				<div class="form-group">
-					<label for="password">Password:</label>
-					<input type="password" name="password" id="password" class="form-control" required>
-					<a href="forgotPassword.jsp" class="link">Forgot your password?</a>
-				</div>
-				<button type="submit" name="Submit2" class="btn btn-primary btn-block">Log In</button>
-			</form>
+			</div>
 		</div>
 	</div>
 	

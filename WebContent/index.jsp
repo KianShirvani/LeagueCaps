@@ -92,7 +92,7 @@
                     String authenticatedUser = (String) session.getAttribute("authenticatedUser");
                     if (authenticatedUser != null) {
                 %>
-                    <a href="logout.jsp" class="btn btn-primary btn-lg mx-2">Welcome: <%= authenticatedUser %></a>
+                    <a href="customer.jsp" class="btn btn-primary btn-lg mx-2">Welcome: <%= authenticatedUser %></a>
                 <% } else { %>
                     <a href="login.jsp" class="btn btn-primary btn-lg mx-2">Sign In</a>
                 <% } %>

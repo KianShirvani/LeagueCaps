@@ -170,23 +170,32 @@
         </div>
     </div>
 </div>
->
 
-    <!-- Controls -->
-    <a class="carousel-control-prev" href="#offersCarousel" role="button" data-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="sr-only">Previous</span>
-    </a>
-    <a class="carousel-control-next" href="#offersCarousel" role="button" data-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="sr-only">Next</span>
-    </a>
+<!-- Controls -->
+<a class="carousel-control-prev" href="#offersCarousel" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+</a>
+<a class="carousel-control-next" href="#offersCarousel" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+</a>
 </div>  <!-- End Div of Slideshow -->
 
+<style>
+    .best-sellers {
+        font-size: 4em;
+        text-align: center;
+    }
+    .gold-border {
+        border: 3px solid gold; /* Adjust the width as needed */
+        box-shadow: 0 0 10px gold; /* Optional: Add a glowing effect */
+    }
+</style>
 
 <!-- Dynamic Best Sellers -->
 <div class="container my-5">
-    <h2 class="text-center mb-4">Best Sellers</h2>
+    <h2 class="best-sellers mb-4">Best Sellers</h2>
     <div class="row">
         <%
             try {
@@ -217,7 +226,7 @@
 
                             // Generate a styled card for each product
                             out.println("<div class='col-md-4 col-sm-6 mb-4'>");
-                            out.println("    <div class='card shadow-sm h-100 border-0'>");
+                            out.println("    <div class='card shadow-sm h-100 border-0 gold-border'>"); // Add gold-border class here
                             out.println("        <div class='card-img-container'>");
                             out.println("            <img src='" + imagePath + "' class='card-img-top img-fluid rounded-top' alt='" + productName + "'>");
                             out.println("        </div>");

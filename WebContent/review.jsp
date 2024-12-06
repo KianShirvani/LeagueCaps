@@ -148,7 +148,7 @@
                 if (reviewCount > 0) {
     %>
         <div class="alert alert-danger text-center">
-            You can only review a specific item once.
+            You have already reviewed this product.
         </div>
     <%
                     return;
@@ -180,6 +180,23 @@
 
             // Handle review submission
             if ("POST".equalsIgnoreCase(request.getMethod())) {
+                // Check again if the user has already reviewed this product
+                try (PreparedStatement ps = con.prepareStatement(reviewCheckSQL)) {
+                    ps.setString(1, customerId);
+                    ps.setString(2, productId);
+                    ResultSet rs = ps.executeQuery();
+                    rs.next();
+                    int reviewCount = rs.getInt(1);
+                    if (reviewCount > 0) {
+    %>
+        <div class="alert alert-danger text-center">
+            You have already reviewed this product.
+        </div>
+    <%
+                        return;
+                    }
+                }
+
                 int reviewRating = Integer.parseInt(request.getParameter("reviewRating"));
                 String reviewComment = request.getParameter("reviewComment");
                 String reviewDate = new java.sql.Timestamp(System.currentTimeMillis()).toString();

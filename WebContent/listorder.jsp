@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grocery Order List</title>
+    <title>Your Orders</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
@@ -34,83 +34,122 @@
 <!-- Page Header End-->
 
 <div class="container my-4">
-<h1 class="text-center mb-4">The SQL Cap Shop Orders</h1>
+    <h1 class="text-center mb-4">Your Orders</h1>
 
-<%
-//START OF JAVA CODE
-    try {
-        Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-    } catch (java.lang.ClassNotFoundException e) {
-        out.println("ClassNotFoundException: " + e);
-    }
+    <%
+        // Check if a user is logged in
+        String authenticatedUser = (String) session.getAttribute("authenticatedUser");
 
-    String url = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";
-    String uid = "sa";
-    String pw = "304#sa#pw";
-    NumberFormat currency = NumberFormat.getCurrencyInstance(Locale.US);
-
-    try (Connection con = DriverManager.getConnection(url, uid, pw);
-         Statement stmt = con.createStatement();) {
-
-        String sql = "SELECT O.orderId, O.orderDate, C.customerId, C.firstName, C.lastName, O.totalAmount " +
-                     "FROM ordersummary as O INNER JOIN customer as C ON O.customerId = C.customerId";
-        PreparedStatement pstmt = con.prepareStatement("SELECT productId, quantity, price FROM orderproduct WHERE orderId = ?");
-        ResultSet rst = stmt.executeQuery(sql);
-
-        while (rst.next()) {
-            int orderId = rst.getInt("orderId");
-            String orderDate = rst.getString("orderDate");
-            int customerId = rst.getInt("customerId");
-            String customerName = rst.getString("firstName") + " " + rst.getString("lastName");
-            String totalAmount = currency.format(rst.getDouble("totalAmount"));
-
-            // Card for each order summary
-            out.println("<div class='card mb-4'>");
-            //Card header
-            out.println("<div class='card-header bg-primary text-black'><h5>Order Summary for " + customerName + "</h5></div>");
-            
-            // Order Summary Table
-            out.println("<div class='card-body'>");
-            out.println("<table class='table'><thead><tr>");
-            out.println("<th>Order ID</th><th>Order Date</th><th>Customer ID</th><th>Total Amount</th>");
-            out.println("</tr></thead><tbody>");
-            out.println("<tr><td>" + orderId + "</td><td>" + orderDate + "</td><td>" + customerId + "</td><td>" + totalAmount + "</td></tr>");
-            out.println("</tbody></table>");
-
-            // Fetch Order Products using prepared statement and associated orderid
-            pstmt.setInt(1, orderId);
-            ResultSet rst2 = pstmt.executeQuery();
-
-            // Order Items Table
-            out.println("<h6>Order Items:</h6>");
-            out.println("<table class='table table-bordered'><thead><tr><th>Product ID</th><th>Quantity</th><th>Price</th></tr></thead><tbody>");
-            int quantityTotal = 0;
-            double orderTotal = 0.0;
-            // List all order details from prepared statement for ordered items associated with customer and order ID
-            while (rst2.next()) {
-                int productId = rst2.getInt("productId");
-                int quantity = rst2.getInt("quantity");
-                double price = rst2.getDouble("price");
-
-                orderTotal += quantity * price;
-                quantityTotal += quantity;
-
-                out.println("<tr><td>" + productId + "</td><td>" + quantity + "</td><td>" + currency.format(price) + "</td></tr>");
-            }
-            String formattedOrderTotal = currency.format(orderTotal);
-            out.println("</tbody><tfoot><tr><th>Total</th><th>" + quantityTotal + "</th><th>" + formattedOrderTotal + "</th></tr></tfoot></table>");
-
-            out.println("</div></div>"); // Close card body and card
+        try {
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+        } catch (java.lang.ClassNotFoundException e) {
+            out.println("ClassNotFoundException: " + e);
         }
-        //Close the connection
-        rst.close();
-        pstmt.close();
-        stmt.close();
 
-    } catch (SQLException ex) {
-        out.println("SQLException: " + ex);
-    }
-%>
+        String url = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";
+        String uid = "sa";
+        String pw = "304#sa#pw";
+        NumberFormat currency = NumberFormat.getCurrencyInstance(Locale.US);
+
+        try (Connection con = DriverManager.getConnection(url, uid, pw)) {
+            PreparedStatement pstmtOrders = null;
+            PreparedStatement pstmtOrderProducts = con.prepareStatement("SELECT productId, quantity, price FROM orderproduct WHERE orderId = ?");
+
+            // SQL query variables
+            String sqlOrders = "";
+            if (authenticatedUser != null) {
+                // If user is logged in, get their customerId and display only their orders
+                String customerId = (String) session.getAttribute("customerId");
+                if (customerId == null) {
+                    // Fetch customerId from the database using authenticatedUser
+                    String sqlCustomer = "SELECT customerId FROM customer WHERE userName = ?";
+                    try (PreparedStatement pstmtCustomer = con.prepareStatement(sqlCustomer)) {
+                        pstmtCustomer.setString(1, authenticatedUser);
+                        ResultSet rsCustomer = pstmtCustomer.executeQuery();
+                        if (rsCustomer.next()) {
+                            customerId = rsCustomer.getString("customerId");
+                            session.setAttribute("customerId", customerId);
+                        } else {
+                            out.println("<div class='alert alert-danger'>Customer not found.</div>");
+                            return;
+                        }
+                    }
+                }
+
+                sqlOrders = "SELECT O.orderId, O.orderDate, O.shiptoAddress, O.shiptoCity, O.shiptoState, O.shiptoPostalCode, O.shiptoCountry, O.totalAmount " +
+                            "FROM ordersummary O WHERE O.customerId = ?";
+                pstmtOrders = con.prepareStatement(sqlOrders);
+                pstmtOrders.setString(1, customerId);
+            } else {
+                // If no user is logged in, display all orders
+                sqlOrders = "SELECT O.orderId, O.orderDate, O.shiptoAddress, O.shiptoCity, O.shiptoState, O.shiptoPostalCode, O.shiptoCountry, O.totalAmount " +
+                            "FROM ordersummary O";
+                pstmtOrders = con.prepareStatement(sqlOrders);
+            }
+
+            ResultSet rst = pstmtOrders.executeQuery();
+
+            if (!rst.isBeforeFirst()) {
+                out.println("<div class='alert alert-info'>No orders found.</div>");
+            }
+
+            while (rst.next()) {
+                int orderId = rst.getInt("orderId");
+                String orderDate = rst.getString("orderDate");
+                String shiptoAddress = rst.getString("shiptoAddress");
+                String shiptoCity = rst.getString("shiptoCity");
+                String shiptoState = rst.getString("shiptoState");
+                String shiptoPostalCode = rst.getString("shiptoPostalCode");
+                String shiptoCountry = rst.getString("shiptoCountry");
+                String totalAmount = currency.format(rst.getDouble("totalAmount"));
+
+                // Card for each order summary
+                out.println("<div class='card mb-4'>");
+                // Card header
+                out.println("<div class='card-header bg-primary text-white'><h5>Order ID: " + orderId + "</h5></div>");
+
+                // Order Summary Table
+                out.println("<div class='card-body'>");
+                out.println("<p><strong>Order Date:</strong> " + orderDate + "</p>");
+                out.println("<p><strong>Shipping Address:</strong> " + shiptoAddress + ", " + shiptoCity + ", " + shiptoState + ", " + shiptoPostalCode + ", " + shiptoCountry + "</p>");
+                out.println("<p><strong>Total Amount:</strong> " + totalAmount + "</p>");
+
+                // Fetch Order Products
+                pstmtOrderProducts.setInt(1, orderId);
+                ResultSet rst2 = pstmtOrderProducts.executeQuery();
+
+                // Order Items Table
+                out.println("<h6>Order Items:</h6>");
+                out.println("<table class='table table-bordered'><thead><tr><th>Product ID</th><th>Quantity</th><th>Price</th></tr></thead><tbody>");
+                int quantityTotal = 0;
+                double orderTotal = 0.0;
+
+                while (rst2.next()) {
+                    int productId = rst2.getInt("productId");
+                    int quantity = rst2.getInt("quantity");
+                    double price = rst2.getDouble("price");
+
+                    orderTotal += quantity * price;
+                    quantityTotal += quantity;
+
+                    out.println("<tr><td>" + productId + "</td><td>" + quantity + "</td><td>" + currency.format(price) + "</td></tr>");
+                }
+                String formattedOrderTotal = currency.format(orderTotal);
+                out.println("</tbody><tfoot><tr><th>Total</th><th>" + quantityTotal + "</th><th>" + formattedOrderTotal + "</th></tr></tfoot></table>");
+
+                out.println("</div></div>"); // Close card body and card
+            }
+
+            // Close the result sets and statements
+            rst.close();
+            pstmtOrders.close();
+            pstmtOrderProducts.close();
+
+        } catch (SQLException ex) {
+            out.println("<div class='alert alert-danger'>SQLException: " + ex.getMessage() + "</div>");
+            ex.printStackTrace();
+        }
+    %>
 
 </div>
 

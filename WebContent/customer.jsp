@@ -12,6 +12,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Account Page</title>
+    
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="styles.css">
     <link rel="shortcut icon" type="image/x-icon" href="img/logo.png" />
@@ -133,9 +134,13 @@
     %>
     <div class="card">
         <div class="card-header text-center">
-            <h1>User Account Page</h1>
+            <h1>User Account Page</h1>         
         </div>
         <div class="card-body">
+        <!-- Add the button to view orders -->
+            <div class="text-center my-4">
+                <a href="listorder.jsp" class="btn btn-primary btn-lg w-100">View Your Orders</a>
+            </div>
             <%
                 String url = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";
                 String uid = "sa";
@@ -174,7 +179,7 @@
                     </tbody>
                 </table>
                 <div class="form-group text-center">
-                    <button type="submit" class="btn btn-primary btn-lg">Update Information</button>
+                    <button type="submit" class="btn btn-primary btn-lg w-100">Update Information</button>
                 </div>
             </form>
             <div class="text-center text-success"><%= errorMessage %></div>

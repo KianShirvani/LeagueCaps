@@ -17,6 +17,11 @@ https://chatgpt.com/share/6752b59d-dc6c-8001-96d6-00b58c6db5da
 https://chatgpt.com/share/6752b5e4-0de4-8001-bfe5-fd4bf9a1ba67
 https://chatgpt.com/share/6752b6ca-8e28-8001-a553-6562a5989a2b
 https://chatgpt.com/share/6752b4e5-f394-8001-b6e5-ae7a163a4af1
+https://chatgpt.com/share/6752b9e7-5804-8001-a516-b7ee6fa3ce30
+
+https://www.oracle.com/technical-resources/articles/javase/servlets-jsp.html
+https://beginnersbook.com/2013/11/jsp-implicit-object-session-with-examples/#:~:text=%3E-,The%20session.,until%20the%20session%20remains%20active.
+
 
 
 *** ***

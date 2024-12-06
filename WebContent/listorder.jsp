@@ -112,7 +112,7 @@
                 String customerId = (String) session.getAttribute("customerId");
                 if (customerId == null) {
                     // Fetch customerId from the database using authenticatedUser
-                    String sqlCustomer = "SELECT customerId FROM customer WHERE userName = ?";
+                    String sqlCustomer = "SELECT customerId FROM customer WHERE userid = ?";
                     try (PreparedStatement pstmtCustomer = con.prepareStatement(sqlCustomer)) {
                         pstmtCustomer.setString(1, authenticatedUser);
                         ResultSet rsCustomer = pstmtCustomer.executeQuery();

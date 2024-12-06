@@ -86,8 +86,11 @@
 
 <div class="container mt-5">
     <h1 class="text-center mb-4">Admin Page</h1>
-    <table class="table table-bordered">
-        <thead>
+    <div style="border: 10px solid gold; padding: 10px;  background-color: gold">
+        <h2 class="text-center mb-4">Order Summary</h2>
+    </div>
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
             <tr>
                 <th>Order Date</th>
                 <th>Total Sales</th>
@@ -96,43 +99,80 @@
         <tbody>
         <%
             Connection connection = null;
+            PreparedStatement stmt = null;
+            ResultSet rs = null;
+
             try {
-                // Database connection and query logic
+                // Database connection parameters
                 String url = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";
                 String uid = "sa";
                 String pw = "304#sa#pw";
+
+                // Establish connection
                 connection = DriverManager.getConnection(url, uid, pw);
 
-                String sql = "SELECT orderDate, SUM(totalAmount) AS totalSales FROM ordersummary GROUP BY orderDate";
-                PreparedStatement stmt = connection.prepareStatement(sql);
-                ResultSet rs = stmt.executeQuery();
+                // SQL query to get order dates and total sales
+                String sql = "SELECT CONVERT(VARCHAR(10), orderDate, 23) AS orderDate, SUM(totalAmount) AS totalSales " +
+                             "FROM ordersummary GROUP BY CONVERT(VARCHAR(10), orderDate, 23) ORDER BY orderDate";
 
-                // Loop through the results and display them in the table
+                stmt = connection.prepareStatement(sql);
+                rs = stmt.executeQuery();
+
+                // Process the result set
                 while (rs.next()) {
                     String orderDate = rs.getString("orderDate");
-                    String totalSales = rs.getString("totalSales");
+                    double totalSales = rs.getDouble("totalSales");
 
                     out.println("<tr>");
                     out.println("<td>" + orderDate + "</td>");
                     out.println("<td>$" + totalSales + "</td>");
                     out.println("</tr>");
                 }
-            } catch (SQLException ex) {
-                // Output the error message
-                out.println("<p>Error: " + ex.getMessage() + "</p>");
+            } catch (SQLException e) {
+                out.println("<div class='alert alert-danger'>Error: " + e.getMessage() + "</div>");
             } finally {
-                // Close the database connection
-                if (connection != null) {
-                    try {
-                        connection.close();
-                    } catch (SQLException e) {
-                        out.println("<p>Error closing connection: " + e.getMessage() + "</p>");
-                    }
-                }
+                // Close resources
+                if (rs != null) try { rs.close(); } catch (SQLException ignore) {}
+                if (stmt != null) try { stmt.close(); } catch (SQLException ignore) {}
+                if (connection != null) try { connection.close(); } catch (SQLException ignore) {}
             }
         %>
         </tbody>
     </table>
+</div>
+
+<div class="container mt-5">
+    <div style="border: 10px solid gold; padding: 10px; background-color: gold">
+        <h2 class="text-center mb-4">List of All Customers</h2>
+    </div>
+    <div class="list-group">
+        <%
+            try {
+                // Re-establish connection
+                connection = DriverManager.getConnection(url, uid, pw);
+
+                // SQL query to get customer first names and last names
+                String sql = "SELECT firstName, lastName FROM customer";
+                stmt = connection.prepareStatement(sql);
+                rs = stmt.executeQuery();
+
+                // Process the result set
+                while (rs.next()) {
+                    String firstName = rs.getString("firstName");
+                    String lastName = rs.getString("lastName");
+
+                    out.println("<a href='#' class='list-group-item list-group-item-action'>" + firstName + " " + lastName + "</a>");
+                }
+            } catch (SQLException e) {
+                out.println("<div class='alert alert-danger'>Error: " + e.getMessage() + "</div>");
+            } finally {
+                // Close resources
+                if (rs != null) try { rs.close(); } catch (SQLException ignore) {}
+                if (stmt != null) try { stmt.close(); } catch (SQLException ignore) {}
+                if (connection != null) try { connection.close(); } catch (SQLException ignore) {}
+            }
+        %>
+    </div>
 </div>
 
 <!-- Footer Section -->

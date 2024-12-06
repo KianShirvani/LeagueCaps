@@ -226,8 +226,10 @@
                                 </div>
                 
                                 <!-- Add to Cart and Continue Shopping Buttons -->
-                                <a href="addcart.jsp?id=<%= productId %>&name=<%= name %>&price=<%= price %>" class="btn btn-success mt-3">Add to Cart</a>
-                                <a href="listprod.jsp" class="btn btn-secondary mt-3">Continue Shopping</a>
+                                <a href="review.jsp?id=<%= productId %>" class="btn btn-info mt-3 w-100">Write a Review</a>
+                                <a href="addcart.jsp?id=<%= productId %>&name=<%= name %>&price=<%= price %>" class="btn btn-success mt-3 w-100">Add to Cart</a>
+                                <a href="listprod.jsp" class="btn btn-secondary mt-3 w-100">Continue Shopping</a>
+                                
                             </div>
                         </div>
                     </div>

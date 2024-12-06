@@ -1,3 +1,6 @@
+<%@ page import="java.sql.*" %>
+<%@ page import="javax.servlet.http.*, javax.servlet.*" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -68,6 +71,12 @@
             }
 
             return true;
+        }
+
+        function handleSubmit(event) {
+            if (!validateForm()) {
+                event.preventDefault();
+            }
         }
     </script>
 </head>
@@ -172,10 +181,10 @@
             <p class="text-center">Enter your Shipping Information</p>
 			<!-- Error Messages Section -->
 <div id="errorMessages" class="container mt-3"></div>
-            <form method="post" action="paymentInfo.jsp" class="d-flex flex-column align-items-center" onsubmit="return validateForm()">
+            <form id="shippingForm" method="post" action="shippingInfo.jsp" class="d-flex flex-column align-items-center" onsubmit="handleSubmit(event)">
                 <div class="mb-3" style="width: 300px;">
                     <label for="address" class="form-label"></label>
-                    <input type="text" id="address" name="address" class="form-control" placeholder="Address" required>
+                    <input type="text" id="address" name="address" class="form-control" placeholder="Address" required value="<%= request.getParameter("address") != null ? request.getParameter("address") : "" %>">
                 </div>
                 <div class="mb-3" style="width: 300px;">
                     <label for="city" class="form-label"></label>

@@ -139,7 +139,12 @@
         <div class="card-body">
         <!-- Add the button to view orders -->
             <div class="text-center my-4">
-                <a href="listorder.jsp" class="btn btn-primary btn-lg w-100">View Your Orders</a>
+                <div class="mb-3">
+                    <a href="admin.jsp" class="btn btn-primary btn-lg w-100">Administrator Portal </a>
+                </div>
+                <div>
+                    <a href="listorder.jsp" class="btn btn-primary btn-lg w-100">View Your Orders</a>
+                </div>
             </div>
             <%
                 String url = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";

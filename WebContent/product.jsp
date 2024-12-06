@@ -224,6 +224,50 @@
                                         </div>
                                     </div>
                                 </div>
+
+<!-- Reviews -->
+                    <div class="card">
+                        <div class="card-header" id="reviewsHeader">
+                            <button class="btn btn-link" data-toggle="collapse" data-target="#reviews" aria-expanded="false" aria-controls="reviews">
+                                Reviews
+                            </button>
+                        </div>
+                        <div id="reviews" class="collapse" aria-labelledby="reviewsHeader" data-parent="#accordion">
+                            <div class="card-body">
+                                <% 
+                                    // Fetch reviews from the database
+                                    String reviewSQL = "SELECT reviewRating, reviewComment, reviewDate FROM review WHERE productId = ?";
+                                    try (PreparedStatement ps = con.prepareStatement(reviewSQL)) {
+                                        ps.setString(1, productId);
+                                        ResultSet rs2 = ps.executeQuery();
+                                        if (!rs2.isBeforeFirst()) {
+                                %>
+                                    <p>No reviews yet. Be the first to <a href="review.jsp?id=<%= productId %>">write a review</a>.</p>
+                                <% 
+                                        } else {
+                                            while (rs2.next()) {
+                                                int reviewRating = rs2.getInt("reviewRating");
+                                                String reviewComment = rs2.getString("reviewComment");
+                                                String reviewDate = rs2.getString("reviewDate");
+                                %>
+                                    <div class="review">
+                                        <p><strong>Rating:</strong> <%= reviewRating %> / 5</p>
+                                        <p><strong>Comment:</strong> <%= reviewComment %></p>
+                                        <p><small><strong>Date:</strong> <%= reviewDate %></small></p>
+                                    </div>
+                                    <hr>
+                                <% 
+                                            }
+                                        }
+                                    } catch (SQLException e) {
+                                        out.println("<div class='alert alert-danger'>An error occurred while fetching reviews: " + e.getMessage() + "</div>");
+                                    }
+                                %>
+                            </div>
+                        </div>
+                    </div>
+
+
                 
                                 <!-- Add to Cart and Continue Shopping Buttons -->
                                 <a href="review.jsp?id=<%= productId %>" class="btn btn-info mt-3 w-100">Write a Review</a>
